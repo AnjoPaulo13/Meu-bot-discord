@@ -234,23 +234,24 @@ async def historico(ctx, usuario: discord.Member):
 async def comandos(ctx):
     embed = discord.Embed(title="📜 Lista de Comandos", color=0x3498db)
     embed.add_field(name="🔧 Comandos de Moderação", value=
-        "`hy!punir @usuário tempo motivo` - Aplica um mute temporário.\n"
-        "`hy!banir @usuário motivo` - Bane um usuário permanentemente.\n"
-        "`hy!desbanir ID_DO_USUÁRIO` - Remove um banimento pelo ID.\n"
-        "`hy!kick @usuário motivo` - Expulsa um usuário do servidor.\n"
-        "`hy!remover_punicao @usuário` - Remove todas as punições ativas.\n",
+        "hy!punir @usuário tempo motivo - Aplica um mute temporário.\n"
+        "hy!banir @usuário motivo - Bane um usuário permanentemente.\n"
+        "hy!desbanir ID_DO_USUÁRIO - Remove um banimento pelo ID.\n"
+        "hy!kick @usuário motivo - Expulsa um usuário do servidor.\n"
+        "hy!remover_punicao @usuário - Remove todas as punições ativas.\n"
+        "hy!revisao @usuário [aceita/nega] [motivo] - Revisão de punição.\n",
         inline=False)
-    
+
     embed.add_field(name="📊 Comandos de Monitoramento", value=
         "`hy!strikes @usuário` - Mostra a quantidade de strikes.\n"
         "`hy!historico @usuário` - Exibe o histórico de punições.\n"
         "`hy!remover_strike @usuário` - Remove um strike ativo.\n",
         inline=False)
-    
+
     embed.add_field(name="📜 Comando de Listagem", value=
         "`hy!comandos` - Exibe esta lista de comandos.\n",
         inline=False)
-    
+
     embed.set_footer(text="Apenas administradores podem usar esses comandos.")
     await ctx.send(embed=embed, ephemeral=True)
 
