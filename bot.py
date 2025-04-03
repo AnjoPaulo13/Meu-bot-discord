@@ -58,46 +58,46 @@ CANAL_REGRAS = 1042250719920664639
 CANAL_ATENDIMENTO = 1042250720583372964
 CANAL_ENVIO = 1356009108402340162
 
+#imagem
+IMAGEM_FOOTER = "https://cdn.discordapp.com/attachments/1356012837264298196/1356012878817132694/16693356531179.png?ex=67eef967&is=67eda7e7&hm=692e9393bdb4a26d372e5213498db246b08fd43fa19c4210eb971d7600365a1a&"
+
+
 @bot.command()
 @commands.has_permissions(administrator=True)
-async def revisao(ctx, usuario: discord.Member, status: str, *, motivo: str = "Não especificado"):
-    """Comando para enviar a revisão da punição."""
-    revisor = ctx.author.mention
-    user_mention = usuario.mention
-    
-    if status.lower() == "aceita":
-        embed = discord.Embed(title="✅ - REVISÃO ACEITA", color=discord.Color.green())
-        embed.add_field(name="Usuário:", value=user_mention, inline=False)
-        embed.add_field(name="Revisor:", value=revisor, inline=False)
-        embed.add_field(name="Motivo:", value=motivo, inline=False)
-        embed.add_field(name="Data de Revisão:", value=f"{ctx.message.created_at.strftime('%d/%m/%Y %H:%M:%S')}", inline=False)
-        embed.add_field(name="Info:", value=f"→ Sua punição foi removida/reduzida. Caso tenha dúvidas, entre em contato com a equipe pelo canal <#{CANAL_ATENDIMENTO}>."
-                    , inline=False)
-        embed.set_footer(text="Rede Hypex")
-    
-    elif status.lower() == "nega":
-        embed = discord.Embed(title="❌ - REVISÃO NEGADA", color=discord.Color.red())
-        embed.add_field(name="Usuário:", value=user_mention, inline=False)
-        embed.add_field(name="Revisor:", value=revisor, inline=False)
-        embed.add_field(name="Motivo:", value=motivo, inline=False)
-        embed.add_field(name="Info:", value=f"→ A punição permanecerá ativa. Caso tenha dúvidas, consulte as regras da Rede Hypex (<#{CANAL_REGRAS}>) ou entre em contato pelo canal <#{CANAL_ATENDIMENTO}>.\n\n⏰ Você poderá enviar uma nova revisão após 7 dias."
-                    , inline=False)
-        embed.set_footer(text="Rede Hypex")
-    else:
-        await ctx.send("❌ Status inválido! Use 'aceita' ou 'nega'.")
+async def revisar(ctx, usuario: discord.Member, status: str):
+    if status.lower() not in ["aceito", "negado"]:
+        await ctx.send("Status inválido! Use 'aceito' ou 'negado'.")
         return
+    
+    revisor = ctx.author
+    data_revisao = datetime.now().strftime("%d/%m/%Y %H:%M")
+    
+    if status.lower() == "aceito":
+        embed = discord.Embed(title="✅ - REVISÃO ACEITA", color=0x00ff00)
+        embed.description = f"→ {usuario.mention}, sua revisão de punição foi **ACEITA**."
+        embed.add_field(name="Motivo:", value="", inline=False)
+        embed.add_field(name="Revisor:", value=f"{revisor.mention}", inline=False)
+        embed.add_field(name="Data de Revisão:", value=data_revisao, inline=False)
+        embed.add_field(name="Status:", value="→ Sua punição foi removida/reduzida. Caso tenha dúvidas, entre em contato pelo canal <#{CANAL_ATENDIMENTO_ID}>.", inline=False)
+    
+    else:
+        embed = discord.Embed(title="❌ - REVISÃO NEGADA", color=0xff0000)
+        embed.description = f"→ {usuario.mention}, sua revisão de punição foi **NEGADA**."
+        embed.add_field(name="Motivo:", value="", inline=False)
+        embed.add_field(name="Revisor:", value=f"{revisor.mention}", inline=False)
+        embed.add_field(name="Data de Revisão:", value=data_revisao, inline=False)
+        embed.add_field(name="Status:", value=f"→ A punição permanecerá ativa. Consulte as regras em <#{CANAL_DIRETRIZES_ID}> ou entre em contato pelo canal <#{CANAL_ATENDIMENTO_ID}>.", inline=False)
+        embed.add_field(name="⏰", value="**Você poderá enviar uma nova revisão após 7 dias a partir desta resposta. Enviar antes desse prazo poderá resultar no encerramento automático da solicitação.**", inline=False)
+    
+    embed.set_footer(text="Rede Hypex", icon_url=IMAGEM_FOOTER)
+    canal = bot.get_channel(CANAL_REVISÃO_ID)
+    await canal.send(embed=embed)
+    await ctx.send(f"Revisão {status.upper()} enviada para {usuario.mention}!")
+
     
     canal = bot.get_channel(CANAL_ENVIO)
     await canal.send(embed=embed)
     await ctx.send(f"✅ Revisão enviada no canal <#{CANAL_ENVIO}>.")
-    
-@bot.event
-async def on_ready():
-    print(f"Bot conectado como {bot.user}")
-
-async def send_log(embed):
-    log_channel = bot.get_channel(LOG_CHANNEL_ID)
-    await log_channel.send(embed=embed)
     
 # Comando de Expulsão
 @bot.command()
