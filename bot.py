@@ -53,6 +53,44 @@ def parse_time(time_str):
 # Canal de logs
 LOG_CHANNEL_ID = 1043916988961017916
 
+# IDs dos canais
+CANAL_REGRAS = 1042250719920664639
+CANAL_ATENDIMENTO = 1042250720583372964
+CANAL_ENVIO = 1356009108402340162
+
+@bot.command()
+@commands.has_permissions(administrator=True)
+async def revisao(ctx, usuario: discord.Member, status: str, *, motivo: str = "Não especificado"):
+    """Comando para enviar a revisão da punição."""
+    revisor = ctx.author.mention
+    user_mention = usuario.mention
+    
+    if status.lower() == "aceita":
+        embed = discord.Embed(title="✅ - REVISÃO ACEITA", color=discord.Color.green())
+        embed.add_field(name="Usuário:", value=user_mention, inline=False)
+        embed.add_field(name="Revisor:", value=revisor, inline=False)
+        embed.add_field(name="Motivo:", value=motivo, inline=False)
+        embed.add_field(name="Data de Revisão:", value=f"{ctx.message.created_at.strftime('%d/%m/%Y %H:%M:%S')}", inline=False)
+        embed.add_field(name="Info:", value=f"→ Sua punição foi removida/reduzida. Caso tenha dúvidas, entre em contato com a equipe pelo canal <#{CANAL_ATENDIMENTO}>."
+                    , inline=False)
+        embed.set_footer(text="Rede Hypex")
+    
+    elif status.lower() == "nega":
+        embed = discord.Embed(title="❌ - REVISÃO NEGADA", color=discord.Color.red())
+        embed.add_field(name="Usuário:", value=user_mention, inline=False)
+        embed.add_field(name="Revisor:", value=revisor, inline=False)
+        embed.add_field(name="Motivo:", value=motivo, inline=False)
+        embed.add_field(name="Info:", value=f"→ A punição permanecerá ativa. Caso tenha dúvidas, consulte as regras da Rede Hypex (<#{CANAL_REGRAS}>) ou entre em contato pelo canal <#{CANAL_ATENDIMENTO}>.\n\n⏰ Você poderá enviar uma nova revisão após 7 dias."
+                    , inline=False)
+        embed.set_footer(text="Rede Hypex")
+    else:
+        await ctx.send("❌ Status inválido! Use 'aceita' ou 'nega'.")
+        return
+    
+    canal = bot.get_channel(CANAL_ENVIO)
+    await canal.send(embed=embed)
+    await ctx.send(f"✅ Revisão enviada no canal <#{CANAL_ENVIO}>.")
+    
 @bot.event
 async def on_ready():
     print(f"Bot conectado como {bot.user}")
