@@ -95,7 +95,7 @@ async def revisao(ctx, usuario: discord.Member, status: str, *, motivo: str = "N
         embed.add_field(name="Revisor:", value=f"{revisor.mention}", inline=False)
         embed.add_field(name="Data de Revisão:", value=f"<t:{timestamp_unix}:F>", inline=False)
         embed.add_field(name="Status:", value=f"→ A punição permanecerá ativa. Consulte as regras em <#{CANAL_REGRAS}> ou entre em contato pelo canal <#{CANAL_ATENDIMENTO}>.", inline=False)
-        embed.add_field(name=f"{e_espere}", value="**Você poderá enviar uma nova revisão após 7 dias a partir desta resposta. Enviar antes desse prazo poderá resultar no encerramento automático da solicitação.**", inline=False)
+        embed.add_field(name=f"\n{e_espere}", value="**Você poderá enviar uma nova revisão após 7 dias a partir desta resposta. Enviar antes desse prazo poderá resultar no encerramento automático da solicitação.**", inline=False)
     
     embed.set_footer(text="Rede Hypex", icon_url=IMAGEM_HYPEX)
     embed.set_thumbnail(url=IMAGEM_HYPEX)
