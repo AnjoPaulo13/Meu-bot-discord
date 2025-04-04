@@ -70,7 +70,7 @@ async def revisao(ctx, usuario: discord.Member, status: str, *, motivo: str = "N
         return
     
     revisor = ctx.author
-    data_revisao = pytz.timezone("America/Sao_Paulo")
+    data_revisao = datetime.now(FUSO_HORARIO)
     
     if status.lower() == "aceita":
         embed = discord.Embed(title="✅ - REVISÃO ACEITA", color=0x00ff00)
