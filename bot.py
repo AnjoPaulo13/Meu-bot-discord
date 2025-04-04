@@ -65,7 +65,7 @@ CANAL_ATENDIMENTO = 1042250720583372964
 CANAL_ENVIO = 1356009108402340162
 
 #imagem
-IMAGEM_FOOTER = "https://cdn.discordapp.com/attachments/1356012837264298196/1356012878817132694/16693356531179.png?ex=67eef967&is=67eda7e7&hm=692e9393bdb4a26d372e5213498db246b08fd43fa19c4210eb971d7600365a1a&"
+IMAGEM_HYPEX = "https://cdn.discordapp.com/attachments/1356012837264298196/1356012878817132694/16693356531179.png?ex=67eef967&is=67eda7e7&hm=692e9393bdb4a26d372e5213498db246b08fd43fa19c4210eb971d7600365a1a&"
 
 
 @bot.command()
@@ -95,7 +95,8 @@ async def revisao(ctx, usuario: discord.Member, status: str, *, motivo: str = "N
         embed.add_field(name="Status:", value=f"→ A punição permanecerá ativa. Consulte as regras em <#{CANAL_REGRAS}> ou entre em contato pelo canal <#{CANAL_ATENDIMENTO}>.", inline=False)
         embed.add_field(name=f"{e_espere}", value="**Você poderá enviar uma nova revisão após 7 dias a partir desta resposta. Enviar antes desse prazo poderá resultar no encerramento automático da solicitação.**", inline=False)
     
-    embed.set_footer(text="Rede Hypex", icon_url=IMAGEM_FOOTER)
+    embed.set_footer(text="Rede Hypex", icon_url=IMAGEM_HYPEX)
+    embed.set_thumbnail(url=IMAGEM_HYPEX)
     canal = bot.get_channel(CANAL_ENVIO)
     await canal.send(embed=embed)
     await ctx.send(f"Revisão {status.upper()} enviada para {usuario.mention}!")
