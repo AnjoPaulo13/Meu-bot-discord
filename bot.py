@@ -64,40 +64,35 @@ IMAGEM_FOOTER = "https://cdn.discordapp.com/attachments/1356012837264298196/1356
 
 @bot.command()
 @commands.has_permissions(administrator=True)
-async def revisar(ctx, usuario: discord.Member, status: str):
-    if status.lower() not in ["aceito", "negado"]:
+async def revisao(ctx, usuario: discord.Member, status: str, *, motivo: str = "Não especificado"):
+    if status.lower() not in ["aceita", "negada"]:
         await ctx.send("Status inválido! Use 'aceito' ou 'negado'.")
         return
     
     revisor = ctx.author
-    data_revisao = datetime.now().strftime("%d/%m/%Y %H:%M")
+    data_revisao = pytz.timezone("America/Sao_Paulo")
     
-    if status.lower() == "aceito":
+    if status.lower() == "aceita":
         embed = discord.Embed(title="✅ - REVISÃO ACEITA", color=0x00ff00)
         embed.description = f"→ {usuario.mention}, sua revisão de punição foi **ACEITA**."
-        embed.add_field(name="Motivo:", value="", inline=False)
+        embed.add_field(name="Motivo:", value=f"{motivo}", inline=False)
         embed.add_field(name="Revisor:", value=f"{revisor.mention}", inline=False)
         embed.add_field(name="Data de Revisão:", value=data_revisao, inline=False)
-        embed.add_field(name="Status:", value="→ Sua punição foi removida/reduzida. Caso tenha dúvidas, entre em contato pelo canal <#{CANAL_ATENDIMENTO_ID}>.", inline=False)
+        embed.add_field(name="Status:", value=f"→ Sua punição foi removida/reduzida. Caso tenha dúvidas, entre em contato pelo canal <#{CANAL_ATENDIMENTO}>.", inline=False)
     
     else:
         embed = discord.Embed(title="❌ - REVISÃO NEGADA", color=0xff0000)
         embed.description = f"→ {usuario.mention}, sua revisão de punição foi **NEGADA**."
-        embed.add_field(name="Motivo:", value="", inline=False)
+        embed.add_field(name="Motivo:", value=f"{motivo}", inline=False)
         embed.add_field(name="Revisor:", value=f"{revisor.mention}", inline=False)
         embed.add_field(name="Data de Revisão:", value=data_revisao, inline=False)
-        embed.add_field(name="Status:", value=f"→ A punição permanecerá ativa. Consulte as regras em <#{CANAL_DIRETRIZES_ID}> ou entre em contato pelo canal <#{CANAL_ATENDIMENTO_ID}>.", inline=False)
+        embed.add_field(name="Status:", value=f"→ A punição permanecerá ativa. Consulte as regras em <#{CANAL_REGRAS}> ou entre em contato pelo canal <#{CANAL_ATENDIMENTO}>.", inline=False)
         embed.add_field(name="⏰", value="**Você poderá enviar uma nova revisão após 7 dias a partir desta resposta. Enviar antes desse prazo poderá resultar no encerramento automático da solicitação.**", inline=False)
     
     embed.set_footer(text="Rede Hypex", icon_url=IMAGEM_FOOTER)
-    canal = bot.get_channel(CANAL_REVISÃO_ID)
-    await canal.send(embed=embed)
-    await ctx.send(f"Revisão {status.upper()} enviada para {usuario.mention}!")
-
-    
     canal = bot.get_channel(CANAL_ENVIO)
     await canal.send(embed=embed)
-    await ctx.send(f"✅ Revisão enviada no canal <#{CANAL_ENVIO}>.")
+    await ctx.send(f"Revisão {status.upper()} enviada para {usuario.mention}!")
     
 # Comando de Expulsão
 @bot.command()
@@ -239,7 +234,7 @@ async def comandos(ctx):
         "hy!desbanir ID_DO_USUÁRIO - Remove um banimento pelo ID.\n"
         "hy!kick @usuário motivo - Expulsa um usuário do servidor.\n"
         "hy!remover_punicao @usuário - Remove todas as punições ativas.\n"
-        "hy!revisao @usuário [aceita/nega] [motivo] - Revisão de punição.\n",
+        "hy!revisao @usuário [aceita/negada] [motivo] - Revisão de punição.\n",
         inline=False)
 
     embed.add_field(name="📊 Comandos de Monitoramento", value=
