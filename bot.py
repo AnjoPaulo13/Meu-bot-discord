@@ -76,14 +76,16 @@ async def revisao(ctx, usuario: discord.Member, status: str, *, motivo: str = "N
         return
     
     revisor = ctx.author
-    data_revisao = datetime.now(FUSO_HORARIO)
+    data_revisao = datetime.now()
+    timestamp_unix = int(data_revisao.timestamp())
+
     
     if status.lower() == "aceita":
         embed = discord.Embed(title=f"{e_certo} - REVISÃO ACEITA", color=0x00ff00)
         embed.description = f"→ {usuario.mention}, sua revisão de punição foi **ACEITA**."
         embed.add_field(name="Motivo:", value=f"{motivo}", inline=False)
         embed.add_field(name="Revisor:", value=f"{revisor.mention}", inline=False)
-        embed.add_field(name="Data de Revisão:", value=data_revisao, inline=False)
+        embed.add_field(name="Data de Revisão:", value=f"<t:{timestamp_unix}:F>", inline=False)
         embed.add_field(name="Status:", value=f"→ Sua punição foi removida/reduzida. Caso tenha dúvidas, entre em contato pelo canal <#{CANAL_ATENDIMENTO}>.", inline=False)
     
     else:
@@ -91,7 +93,7 @@ async def revisao(ctx, usuario: discord.Member, status: str, *, motivo: str = "N
         embed.description = f"→ {usuario.mention}, sua revisão de punição foi **NEGADA**."
         embed.add_field(name="Motivo:", value=f"{motivo}", inline=False)
         embed.add_field(name="Revisor:", value=f"{revisor.mention}", inline=False)
-        embed.add_field(name="Data de Revisão:", value=data_revisao, inline=False)
+        embed.add_field(name="Data de Revisão:", value=f"<t:{timestamp_unix}:F>", inline=False)
         embed.add_field(name="Status:", value=f"→ A punição permanecerá ativa. Consulte as regras em <#{CANAL_REGRAS}> ou entre em contato pelo canal <#{CANAL_ATENDIMENTO}>.", inline=False)
         embed.add_field(name=f"{e_espere}", value="**Você poderá enviar uma nova revisão após 7 dias a partir desta resposta. Enviar antes desse prazo poderá resultar no encerramento automático da solicitação.**", inline=False)
     
