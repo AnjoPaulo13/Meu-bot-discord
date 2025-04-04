@@ -23,9 +23,9 @@ bot = commands.Bot(command_prefix=PREFIX, intents=intents)
 FUSO_HORARIO = pytz.timezone("America/Sao_Paulo")
 
 #Emojis
-e_certo= <:certo:1352025090614628432>
-e_errado= <:errado:1352244395662905375>
-e_espere= <:Espera:1036089809187393547>
+e_certo= "<:certo:1352025090614628432>"
+e_errado= "<:errado:1352244395662905375>"
+e_espere= "<:Espera:1036089809187393547>"
 
 
 # Conectar ao banco de dados
