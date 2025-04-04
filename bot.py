@@ -22,6 +22,12 @@ bot = commands.Bot(command_prefix=PREFIX, intents=intents)
 # Definir fuso horário para Brasília
 FUSO_HORARIO = pytz.timezone("America/Sao_Paulo")
 
+#Emojis
+e_certo= <:certo:1352025090614628432>
+e_errado= <:errado:1352244395662905375>
+e_espere= <:Espera:1036089809187393547>
+
+
 # Conectar ao banco de dados
 db = sqlite3.connect("moderacao.db")
 cursor = db.cursor()
@@ -73,7 +79,7 @@ async def revisao(ctx, usuario: discord.Member, status: str, *, motivo: str = "N
     data_revisao = datetime.now(FUSO_HORARIO)
     
     if status.lower() == "aceita":
-        embed = discord.Embed(title="✅ - REVISÃO ACEITA", color=0x00ff00)
+        embed = discord.Embed(title=f"{e_certo} - REVISÃO ACEITA", color=0x00ff00)
         embed.description = f"→ {usuario.mention}, sua revisão de punição foi **ACEITA**."
         embed.add_field(name="Motivo:", value=f"{motivo}", inline=False)
         embed.add_field(name="Revisor:", value=f"{revisor.mention}", inline=False)
@@ -81,13 +87,13 @@ async def revisao(ctx, usuario: discord.Member, status: str, *, motivo: str = "N
         embed.add_field(name="Status:", value=f"→ Sua punição foi removida/reduzida. Caso tenha dúvidas, entre em contato pelo canal <#{CANAL_ATENDIMENTO}>.", inline=False)
     
     else:
-        embed = discord.Embed(title="❌ - REVISÃO NEGADA", color=0xff0000)
+        embed = discord.Embed(title=f"{e_errado} - REVISÃO NEGADA", color=0xff0000)
         embed.description = f"→ {usuario.mention}, sua revisão de punição foi **NEGADA**."
         embed.add_field(name="Motivo:", value=f"{motivo}", inline=False)
         embed.add_field(name="Revisor:", value=f"{revisor.mention}", inline=False)
         embed.add_field(name="Data de Revisão:", value=data_revisao, inline=False)
         embed.add_field(name="Status:", value=f"→ A punição permanecerá ativa. Consulte as regras em <#{CANAL_REGRAS}> ou entre em contato pelo canal <#{CANAL_ATENDIMENTO}>.", inline=False)
-        embed.add_field(name="⏰", value="**Você poderá enviar uma nova revisão após 7 dias a partir desta resposta. Enviar antes desse prazo poderá resultar no encerramento automático da solicitação.**", inline=False)
+        embed.add_field(name=f"{e_espere}", value="**Você poderá enviar uma nova revisão após 7 dias a partir desta resposta. Enviar antes desse prazo poderá resultar no encerramento automático da solicitação.**", inline=False)
     
     embed.set_footer(text="Rede Hypex", icon_url=IMAGEM_FOOTER)
     canal = bot.get_channel(CANAL_ENVIO)
