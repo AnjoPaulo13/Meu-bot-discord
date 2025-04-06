@@ -190,18 +190,6 @@ class ResolvedTicketView(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=None)
 
-    @discord.ui.button(label="Reabrir Ticket", style=discord.ButtonStyle.green, custom_id="reopen_ticket")
-    async def reabrir_ticket(self, interaction: discord.Interaction, button: discord.ui.Button):
-        embed = discord.Embed(
-            title="Ticket Reaberto",
-            description="Este ticket foi reaberto e está novamente disponível para atendimento.",
-            color=discord.Color.green(),
-            timestamp=datetime.utcnow()
-        )
-        embed.set_footer(text=f"Reaberto por {interaction.user}", icon_url=interaction.user.display_avatar.url)
-        await interaction.message.edit(embed=embed, view=TicketOptionsView())
-        await interaction.response.send_message("Ticket reaberto!", ephemeral=True)
-
     @discord.ui.button(label="Fechar Ticket", style=discord.ButtonStyle.red, custom_id="close_ticket")
     async def fechar_ticket(self, interaction: discord.Interaction, button: discord.ui.Button):
         channel = interaction.channel
@@ -218,9 +206,9 @@ class ResolvedTicketView(discord.ui.View):
         filename = f"transcripts/transcript-{channel.name}.txt"
         with open(filename, "w", encoding="utf-8") as f:
             f.write(transcript)
-            
+
         with open(filename, "rb") as f:
-            file = discord.File(filename)
+            file = discord.File(f, filename=os.path.basename(filename))
             log_channel = interaction.guild.get_channel(LOG_CHANNEL_ID_TICKET)
 
             if log_channel:
@@ -232,7 +220,7 @@ class ResolvedTicketView(discord.ui.View):
                 )
                 log_embed.set_footer(text="Sistema de Tickets\nPor: AnjoPaulo13")
                 await log_channel.send(embed=log_embed, file=file)
-  
+
             await channel.send(file=file)
             await channel.delete()
         
