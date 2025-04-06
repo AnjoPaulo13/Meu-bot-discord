@@ -141,8 +141,7 @@ class CategoriaTicketSelect(discord.ui.Select):
 
         embed = discord.Embed(
             title=f"{cat_info['emoji']} Ticket de {cat_info['nome']}",
-            description=f"{user.mention}, sua solicitação foi enviada.
-**Motivo:** {cat_info['descricao']}",
+            description=f"{user.mention}, sua solicitação foi enviada.\n **Motivo:** {cat_info['descricao']}",
             color=discord.Color.green(),
             timestamp=datetime.utcnow()
         )
