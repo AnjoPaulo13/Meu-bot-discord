@@ -204,24 +204,56 @@ class ResolvedTicketView(discord.ui.View):
 
     @discord.ui.button(label="Fechar Ticket", style=discord.ButtonStyle.red, custom_id="close_ticket")
     async def fechar_ticket(self, interaction: discord.Interaction, button: discord.ui.Button):
-    channel = interaction.channel
-    user = interaction.user
-    await channel.send("Fechando o ticket...")
+       channel = interaction.channel
+       user = interaction.user
+       await channel.send("Fechando o ticket...")
 
-    messages = [
-        f"[{msg.created_at.strftime('%Y-%m-%d %H:%M:%S')}] {msg.author}: {msg.content}"
-        async for msg in channel.history(limit=100, oldest_first=True)
-    ]
-    transcript = "\n".join(messages)
+       messages = [
+           f"[{msg.created_at.strftime('%Y-%m-%d %H:%M:%S')}] {msg.author}: {msg.content}"
+           async for msg in channel.history(limit=100, oldest_first=True)
+       ]
+       transcript = "\n".join(messages)
 
-    os.makedirs("transcripts", exist_ok=True)
-    filename = f"transcripts/transcript-{channel.name}.txt"
-    with open(filename, "w", encoding="utf-8") as f:
-        f.write(transcript)
+       os.makedirs("transcripts", exist_ok=True)
+       filename = f"transcripts/transcript-{channel.name}.txt"
+       with open(filename, "w", encoding="utf-8") as f:
+           f.write(transcript)
+           f.seek(0)  # Adicione isso para evitar o erro "I/O operation on closed file"
 
-    # Agora abrimos o arquivo e o usamos enquanto está aberto
-    with open(filename, "rb") as f:
-        file = discord.File(f, filename=os.path.basename(filename))
+       file = discord.File(filename)
+       log_channel = interaction.guild.get_channel(LOG_CHANNEL_ID)
+
+       if log_channel:
+           log_embed = discord.Embed(
+               title="Ticket Fechado",
+               description=f"O ticket `{channel.name}` foi fechado por {user.mention}.",
+               color=discord.Color.red(),
+               timestamp=datetime.utcnow()
+           )
+           log_embed.set_footer(text="Sistema de Tickets\nPor: AnjoPaulo13")
+           await log_channel.send(embed=log_embed, file=file)
+
+       await channel.send(file=file)
+       await channel.delete()
+
+    @discord.ui.button(label="Fechar Ticket", style=discord.ButtonStyle.red, custom_id="close_ticket")
+    async def fechar_ticket(self, interaction: discord.Interaction, button: discord.ui.Button):
+        channel = interaction.channel
+        user = interaction.user
+        await channel.send("Fechando o ticket...")
+
+        messages = [
+            f"[{msg.created_at.strftime('%Y-%m-%d %H:%M:%S')}] {msg.author}: {msg.content}"
+            async for msg in channel.history(limit=100, oldest_first=True)
+        ]
+        transcript = "\n".join(messages)
+
+        os.makedirs("transcripts", exist_ok=True)
+        filename = f"transcripts/transcript-{channel.name}.txt"
+        with open(filename, "w", encoding="utf-8") as f:
+            f.write(transcript)
+
+        file = discord.File(filename)
         log_channel = interaction.guild.get_channel(LOG_CHANNEL_ID)
 
         if log_channel:
@@ -235,8 +267,7 @@ class ResolvedTicketView(discord.ui.View):
             await log_channel.send(embed=log_embed, file=file)
 
         await channel.send(file=file)
-
-    await channel.delete()
+        await channel.delete()
 
 # ----- Comando para painel de ticket -----
 @bot.command(name="config_ticket")
