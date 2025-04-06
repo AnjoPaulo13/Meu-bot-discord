@@ -377,7 +377,7 @@ async def banir(ctx, usuario: discord.Member, *, motivo: str):
         embed.add_field(name="Banido por", value=ctx.author.mention, inline=False)
         embed.add_field(name="Motivo", value=motivo, inline=False)
         embed.timestamp = datetime.now(FUSO_HORARIO)
-        await send_log(embed)
+        await send_log(bot, embed)
         await ctx.send(f"🚨 {usuario.mention} foi **banido**. Motivo: {motivo}")
     except discord.Forbidden:
         await ctx.send("Não tenho permissão para banir esse usuário.")
@@ -395,7 +395,7 @@ async def desbanir(ctx, usuario_id: int):
         embed.add_field(name="Usuário", value=usuario.mention, inline=False)
         embed.add_field(name="Desbanido por", value=ctx.author.mention, inline=False)
         embed.timestamp = datetime.now(FUSO_HORARIO)
-        await send_log(embed)
+        await send_log(bot, embed)
         await ctx.send(f"✅ {usuario.mention} foi **desbanido**.")
     except discord.NotFound:
         await ctx.send("Usuário não encontrado.")
@@ -414,7 +414,7 @@ async def remover_punicao(ctx, usuario: discord.Member):
     embed.add_field(name="Usuário", value=usuario.mention, inline=False)
     embed.add_field(name="Removido por", value=ctx.author.mention, inline=False)
     embed.timestamp = datetime.now(FUSO_HORARIO)
-    await send_log(embed)
+    await send_log(bot, embed)
     await ctx.send(f"⚠️ Punição de {usuario.mention} removida!")
 
 # Comando para Remover Strike
@@ -427,7 +427,7 @@ async def remover_strike(ctx, usuario: discord.Member):
     embed.add_field(name="Usuário", value=usuario.mention, inline=False)
     embed.add_field(name="Removido por", value=ctx.author.mention, inline=False)
     embed.timestamp = datetime.now(FUSO_HORARIO)
-    await send_log(embed)
+    await send_log(bot, embed)
     await ctx.send(f"✅ Um strike foi removido de {usuario.mention}.")
 
 # Comando para verificar strikes
@@ -440,7 +440,7 @@ async def strikes(ctx, usuario: discord.Member):
     embed.add_field(name="Usuário", value=usuario.mention, inline=False)
     embed.add_field(name="Total de Strikes", value=f"{total_strikes}/4", inline=False)
     embed.timestamp = datetime.now(FUSO_HORARIO)
-    await send_log(embed)
+    await send_log(bot, embed)
     await ctx.send(embed=embed)
 
 # Comando para exibir histórico de punições
@@ -454,7 +454,7 @@ async def historico(ctx, usuario: discord.Member):
     for punicao in punicoes:
         embed.add_field(name=f"{punicao[0]} - {punicao[3]}", value=f"Motivo: {punicao[1]} | Duração: {punicao[2]}", inline=False)
     embed.timestamp = datetime.now(FUSO_HORARIO)
-    await send_log(embed)
+    await send_log(bot, embed)
     await ctx.send(embed=embed)
 
 # Comando para Exibir Comandos
@@ -463,30 +463,4 @@ async def historico(ctx, usuario: discord.Member):
 async def comandos(ctx):
     embed = discord.Embed(title="📜 Lista de Comandos", color=0x3498db)
     embed.add_field(name="🔧 Comandos de Moderação", value=
-        "`hy!punir @usuário tempo motivo` - Aplica um mute temporário.\n"
-        "`hy!banir @usuário motivo` - Bane um usuário permanentemente.\n"
-        "`hy!desbanir ID_DO_USUÁRIO` - Remove um banimento pelo ID.\n"
-        "`hy!kick @usuário motivo` - Expulsa um usuário do servidor.\n"
-        "`hy!remover_punicao @usuário` - Remove todas as punições ativas.\n"
-        "`hy!revisar @usuário [aceita/negada] [motivo]` - Revisão de punição.\n",
-        inline=False)
-
-    embed.add_field(name="📊 Comandos de Monitoramento", value=
-        "`hy!strikes @usuário` - Mostra a quantidade de strikes.\n"
-        "`hy!historico @usuário` - Exibe o histórico de punições.\n"
-        "`hy!remover_strike @usuário` - Remove um strike ativo.\n",
-        inline=False)
-        
-    embed.add_field(name="🎫 Comando de tickets", value=
-        "`hy!config_ticket` - Envia o painel inicial com o botão Abrir Ticket.\n",
-        inline=False)    
-
-    embed.add_field(name="📜 Comando de Listagem", value=
-        "`hy!comandos` - Exibe esta lista de comandos.\n",
-        inline=False)
-
-    embed.set_footer(text="Apenas administradores podem usar esses comandos.")
-    await ctx.send(embed=embed, ephemeral=True)
-
-# Rodar o bot
-bot.run(TOKEN)
+        "`hy!p
