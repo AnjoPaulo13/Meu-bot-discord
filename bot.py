@@ -202,10 +202,6 @@ class ResolvedTicketView(discord.ui.View):
         await interaction.message.edit(embed=embed, view=TicketOptionsView())
         await interaction.response.send_message("Ticket reaberto!", ephemeral=True)
 
-class ResolvedTicketView(discord.ui.View):
-    def __init__(self):
-        super().__init__(timeout=None)
-
     @discord.ui.button(label="Fechar Ticket", style=discord.ButtonStyle.red, custom_id="close_ticket")
     async def fechar_ticket(self, interaction: discord.Interaction, button: discord.ui.Button):
         channel = interaction.channel
