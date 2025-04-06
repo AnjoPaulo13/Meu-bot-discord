@@ -356,7 +356,7 @@ async def punir(ctx, usuario: discord.Member, tempo: str, *, motivo: str):
     embed.add_field(name="Duração", value=tempo, inline=False)
     embed.timestamp = datetime.now(FUSO_HORARIO)
 
-    await send_log(bot, embed)
+    await send_log(embed)
     await ctx.send(f"✅ {usuario.mention} foi punido por {tempo}.")
     
 # Comando para Banir
@@ -370,7 +370,7 @@ async def banir(ctx, usuario: discord.Member, *, motivo: str):
         embed.add_field(name="Banido por", value=ctx.author.mention, inline=False)
         embed.add_field(name="Motivo", value=motivo, inline=False)
         embed.timestamp = datetime.now(FUSO_HORARIO)
-        await send_log(bot, embed)
+        await send_log(embed)
         await ctx.send(f"🚨 {usuario.mention} foi **banido**. Motivo: {motivo}")
     except discord.Forbidden:
         await ctx.send("Não tenho permissão para banir esse usuário.")
@@ -383,20 +383,29 @@ async def banir(ctx, usuario: discord.Member, *, motivo: str):
 async def desbanir(ctx, usuario_id: int):
     try:
         usuario = await bot.fetch_user(usuario_id)
+
+        # Verifica se o usuário realmente está banido
+        banidos = await ctx.guild.bans()
+        if not any(ban_entry.user.id == usuario_id for ban_entry in banidos):
+            await ctx.send("Esse usuário não está banido.")
+            return
+
         await ctx.guild.unban(usuario)
+
         embed = discord.Embed(title="✅ DESBANIMENTO", color=0x00FF00)
-        embed.add_field(name="Usuário", value=usuario_id, inline=False)
+        embed.add_field(name="Usuário", value=str(usuario), inline=False)
         embed.add_field(name="Desbanido por", value=ctx.author.mention, inline=False)
         embed.timestamp = datetime.now(FUSO_HORARIO)
-        await send_log(bot, embed)
-        await ctx.send(f"✅ {usuario_id} foi **desbanido**.")
+
+        await send_log(embed)
+        await ctx.send(f"✅ {str(usuario)} foi **desbanido**.")
     except discord.NotFound:
         await ctx.send("Usuário não encontrado.")
     except discord.Forbidden:
         await ctx.send("Não tenho permissão para desbanir esse usuário.")
     except discord.HTTPException:
         await ctx.send("Ocorreu um erro ao tentar desbanir o usuário.")
-
+        
 # Comando para Remover Punições
 @bot.command()
 @commands.has_permissions(administrator=True)
@@ -407,7 +416,7 @@ async def remover_punicao(ctx, usuario: discord.Member):
     embed.add_field(name="Usuário", value=usuario.mention, inline=False)
     embed.add_field(name="Removido por", value=ctx.author.mention, inline=False)
     embed.timestamp = datetime.now(FUSO_HORARIO)
-    await send_log(bot, embed)
+    await send_log(embed)
     await ctx.send(f"⚠️ Punição de {usuario.mention} removida!")
 
 # Comando para Remover Strike
@@ -420,7 +429,7 @@ async def remover_strike(ctx, usuario: discord.Member):
     embed.add_field(name="Usuário", value=usuario.mention, inline=False)
     embed.add_field(name="Removido por", value=ctx.author.mention, inline=False)
     embed.timestamp = datetime.now(FUSO_HORARIO)
-    await send_log(bot, embed)
+    await send_log(embed)
     await ctx.send(f"✅ Um strike foi removido de {usuario.mention}.")
 
 # Comando para verificar strikes
@@ -433,7 +442,7 @@ async def strikes(ctx, usuario: discord.Member):
     embed.add_field(name="Usuário", value=usuario.mention, inline=False)
     embed.add_field(name="Total de Strikes", value=f"{total_strikes}/4", inline=False)
     embed.timestamp = datetime.now(FUSO_HORARIO)
-    await send_log(bot, embed)
+    await send_log(embed)
     await ctx.send(embed=embed)
 
 # Comando para exibir histórico de punições
@@ -447,7 +456,7 @@ async def historico(ctx, usuario: discord.Member):
     for punicao in punicoes:
         embed.add_field(name=f"{punicao[0]} - {punicao[3]}", value=f"Motivo: {punicao[1]} | Duração: {punicao[2]}", inline=False)
     embed.timestamp = datetime.now(FUSO_HORARIO)
-    await send_log(bot, embed)
+    await send_log(embed)
     await ctx.send(embed=embed)
 
 # Comando para Exibir Comandos
@@ -482,7 +491,7 @@ async def comandos(ctx):
     await ctx.send(embed=embed, ephemeral=True)
     
 # Função auxiliar para enviar o log
-async def send_log(bot, embed):
+async def send_log(embed):
     canal_log = bot.get_channel(LOG_CHANNEL_ID)
     if canal_log:
         await canal_log.send(embed=embed)
