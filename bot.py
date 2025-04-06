@@ -340,38 +340,44 @@ async def banir(ctx, usuario: discord.Member, *, motivo: str):
 @bot.command()
 @commands.has_permissions(administrator=True)
 async def desbanir(ctx, usuario_id: int):
+    # Tenta buscar o usuário
     try:
         usuario = await bot.fetch_user(usuario_id)
+    except discord.NotFound:
+        await ctx.send("Usuário não encontrado.")
+        return
 
-        # Pega a lista de usuários banidos
-        banidos = [entry async for entry in ctx.guild.bans()]
-        if not any(ban_entry.user.id == usuario_id for ban_entry in banidos):
-            await ctx.send("Esse usuário não está banido.")
-            return
+    # Pega a lista de banidos e verifica se o usuário está nela
+    banidos = [entry async for entry in ctx.guild.bans()]
+    if not any(ban_entry.user.id == usuario_id for ban_entry in banidos):
+        await ctx.send("Esse usuário não está banido.")
+        return
 
-        # Desbaniu o usuário
+    # Tenta desbanir
+    try:
         await ctx.guild.unban(usuario)
 
-        # Criação da embed de log
+        nome_formatado = f"{usuario.name}#{usuario.discriminator} (`{usuario.id}`)"
+
         embed = discord.Embed(
             title="✅ DESBANIMENTO",
             color=discord.Color.green(),
             timestamp=datetime.now(FUSO_HORARIO)
         )
-        embed.add_field(name="Usuário", value=f"{usuario} (`{usuario.id}`)", inline=False)
+        embed.add_field(name="Usuário", value=nome_formatado, inline=False)
         embed.add_field(name="Desbanido por", value=ctx.author.mention, inline=False)
 
-        # Envia o log e mensagem de confirmação
+        # Adiciona avatar se disponível
+        if usuario.avatar:
+            embed.set_thumbnail(url=usuario.avatar.url)
+
         await send_log(embed)
-        await ctx.send(f"✅ {usuario} foi **desbanido** com sucesso.")
-        
-    except discord.NotFound:
-        await ctx.send("Usuário não encontrado.")
+        await ctx.send(f"✅ `{nome_formatado}` foi **desbanido** com sucesso.")
     except discord.Forbidden:
         await ctx.send("Não tenho permissão para desbanir esse usuário.")
     except discord.HTTPException as e:
         await ctx.send(f"Ocorreu um erro ao tentar desbanir o usuário. Código: {e.status}")
-
+        
 # Comando para Remover Punições
 @bot.command()
 @commands.has_permissions(administrator=True)
