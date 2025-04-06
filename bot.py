@@ -244,6 +244,7 @@ async def config_ticket(ctx):
 @bot.command()
 @commands.has_permissions(administrator=True)
 async def revisar(ctx, usuario: discord.Member, status: str, *, motivo: str = "Não especificado"):
+    print("Coamando executado")
     if status.lower() not in ["aceita", "negada"]:
         await ctx.send("Status inválido! Use 'aceito' ou 'negado'.")
         return
