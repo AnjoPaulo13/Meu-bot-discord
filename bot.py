@@ -13,7 +13,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 #número aleatório
-num_aleat = random.randint(1-100000000000000000000000000000)
+num_aleat = random.randint(1,100000000000000000000000000000)
 
 # Carregar variáveis de ambiente
 load_dotenv()
