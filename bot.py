@@ -218,22 +218,23 @@ class ResolvedTicketView(discord.ui.View):
         filename = f"transcripts/transcript-{channel.name}.txt"
         with open(filename, "w", encoding="utf-8") as f:
             f.write(transcript)
+            
+        with open(filename, "rb") as f:
+            file = discord.File(filename)
+            log_channel = interaction.guild.get_channel(LOG_CHANNEL_ID_TICKET)
 
-        file = discord.File(filename)
-        log_channel = interaction.guild.get_channel(LOG_CHANNEL_ID_TICKET)
-
-        if log_channel:
-            log_embed = discord.Embed(
-                title="Ticket Fechado",
-                description=f"O ticket `{channel.name}` foi fechado por {user.mention}.",
-                color=discord.Color.red(),
-                timestamp=datetime.utcnow()
-            )
-            log_embed.set_footer(text="Sistema de Tickets\nPor: AnjoPaulo13")
-            await log_channel.send(embed=log_embed, file=file)
-
-        await channel.send(file=file)
-        await channel.delete()
+            if log_channel:
+                log_embed = discord.Embed(
+                    title="Ticket Fechado",
+                    description=f"O ticket `{channel.name}` foi fechado por {user.mention}.",
+                    color=discord.Color.red(),
+                    timestamp=datetime.utcnow()
+                )
+                log_embed.set_footer(text="Sistema de Tickets\nPor: AnjoPaulo13")
+                await log_channel.send(embed=log_embed, file=file)
+  
+            await channel.send(file=file)
+            await channel.delete()
         
 # ----- Comando para painel de ticket -----
 @bot.command(name="config_ticket")
