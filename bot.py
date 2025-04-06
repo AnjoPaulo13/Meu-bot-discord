@@ -241,8 +241,7 @@ class ResolvedTicketView(discord.ui.View):
 async def config_ticket(ctx):
     embed = discord.Embed(
         title="🎫 Central de Tickets",
-        description="Clique no botão abaixo para abrir um ticket.
-Você poderá escolher o motivo depois.",
+        description="Clique no botão abaixo para abrir um ticket.\nVocê poderá escolher o motivo depois.",
         color=discord.Color.blue()
     )
     embed.set_footer(text="Sistema de Tickets")
