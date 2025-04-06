@@ -203,7 +203,7 @@ class ResolvedTicketView(discord.ui.View):
         await interaction.response.send_message("Ticket reaberto!", ephemeral=True)
 
     @discord.ui.button(label="Fechar Ticket", style=discord.ButtonStyle.red, custom_id="close_ticket")
-async def fechar_ticket(self, interaction: discord.Interaction, button: discord.ui.Button):
+    async def fechar_ticket(self, interaction: discord.Interaction, button: discord.ui.Button):
     channel = interaction.channel
     user = interaction.user
     await channel.send("Fechando o ticket...")
