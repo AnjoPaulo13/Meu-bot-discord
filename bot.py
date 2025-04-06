@@ -358,14 +358,7 @@ async def punir(ctx, usuario: discord.Member, tempo: str, *, motivo: str):
 
     await send_log(bot, embed)
     await ctx.send(f"✅ {usuario.mention} foi punido por {tempo}.")
-
-
-# Função auxiliar para enviar o log
-async def send_log(bot, embed):
-    canal_log = bot.get_channel(LOG_CHANNEL_ID)
-    if canal_log:
-        await canal_log.send(embed=embed)
-        
+    
 # Comando para Banir
 @bot.command()
 @commands.has_permissions(administrator=True)
@@ -392,11 +385,11 @@ async def desbanir(ctx, usuario_id: int):
         usuario = await bot.fetch_user(usuario_id)
         await ctx.guild.unban(usuario)
         embed = discord.Embed(title="✅ DESBANIMENTO", color=0x00FF00)
-        embed.add_field(name="Usuário", value=usuario.mention, inline=False)
+        embed.add_field(name="Usuário", value=usuario_id, inline=False)
         embed.add_field(name="Desbanido por", value=ctx.author.mention, inline=False)
         embed.timestamp = datetime.now(FUSO_HORARIO)
         await send_log(bot, embed)
-        await ctx.send(f"✅ {usuario.mention} foi **desbanido**.")
+        await ctx.send(f"✅ {usuario_id} foi **desbanido**.")
     except discord.NotFound:
         await ctx.send("Usuário não encontrado.")
     except discord.Forbidden:
@@ -487,6 +480,12 @@ async def comandos(ctx):
 
     embed.set_footer(text="Apenas administradores podem usar esses comandos.")
     await ctx.send(embed=embed, ephemeral=True)
-
+    
+# Função auxiliar para enviar o log
+async def send_log(bot, embed):
+    canal_log = bot.get_channel(LOG_CHANNEL_ID)
+    if canal_log:
+        await canal_log.send(embed=embed)
+        
 # Rodar o bot
 bot.run(TOKEN)
