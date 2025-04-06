@@ -8,8 +8,12 @@ from dotenv import load_dotenv
 import asyncio
 import logging
 import pytz
+import random
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+#número aleatório
+num_aleat = random.randint(1-100000000000000000000000000000)
 
 # Carregar variáveis de ambiente
 load_dotenv()
@@ -124,7 +128,7 @@ class CategoriaTicketSelect(discord.ui.Select):
         guild = interaction.guild
         user = interaction.user
 
-        ticket_name = f"{categoria_id}-{user.name}-{user.id}".lower().replace(" ", "-")
+        ticket_name = f"{categoria_id}-{user.name}-{user.id}-{num_aleat}".lower().replace(" ", "-")
         existing_channel = discord.utils.get(guild.text_channels, name=ticket_name)
         if existing_channel:
             await interaction.response.send_message("Você já tem um ticket aberto nessa categoria!", ephemeral=True)
