@@ -208,11 +208,10 @@ class ResolvedTicketView(discord.ui.View):
         user = interaction.user
         await channel.send("Fechando o ticket...")
 
-        messages = []
-        async for msg in channel.history(limit=100, oldest_first=True):
-            if msg.content:
-                messages.append(f"[{msg.created_at.strftime('%Y-%m-%d %H:%M:%S')}] {msg.author}: {msg.content}")
-
+        messages = [
+            f"[{msg.created_at.strftime('%Y-%m-%d %H:%M:%S')}] {msg.author}: {msg.content}"
+            async for msg in channel.history(limit=100, oldest_first=True)
+        ]
         transcript = "\n".join(messages)
 
         os.makedirs("transcripts", exist_ok=True)
@@ -235,11 +234,7 @@ class ResolvedTicketView(discord.ui.View):
 
         await channel.send(file=file)
         await channel.delete()
-
-class TicketOptionsView(discord.ui.View):
-    def __init__(self):
-        super().__init__(timeout=None)
-
+        
 # ----- Comando para painel de ticket -----
 @bot.command(name="config_ticket")
 @commands.has_permissions(administrator=True)
