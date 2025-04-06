@@ -57,7 +57,7 @@ def parse_time(time_str):
 
 # Canal de logs
 LOG_CHANNEL_ID = 1043916988961017916
-
+LOG_CHANNEL_ID_TICKET = 1358514192763715755
 # IDs dos canais
 CANAL_REGRAS = 1042250719920664639
 CANAL_ATENDIMENTO = 1042250720583372964
@@ -221,7 +221,7 @@ class ResolvedTicketView(discord.ui.View):
            f.seek(0)  # Adicione isso para evitar o erro "I/O operation on closed file"
 
        file = discord.File(filename)
-       log_channel = interaction.guild.get_channel(LOG_CHANNEL_ID)
+       log_channel = interaction.guild.get_channel(LOG_CHANNEL_ID_TICKET)
 
        if log_channel:
            log_embed = discord.Embed(
@@ -254,7 +254,7 @@ class ResolvedTicketView(discord.ui.View):
             f.write(transcript)
 
         file = discord.File(filename)
-        log_channel = interaction.guild.get_channel(LOG_CHANNEL_ID)
+        log_channel = interaction.guild.get_channel(LOG_CHANNEL_ID_TICKET)
 
         if log_channel:
             log_embed = discord.Embed(
@@ -334,7 +334,6 @@ async def kick(ctx, usuario: discord.Member, *, motivo: str):
     except discord.HTTPException:
         await ctx.send("Ocorreu um erro ao tentar expulsar o usuário.")
         
-# Comando para Punir
 @bot.command()
 @commands.has_permissions(administrator=True)
 async def punir(ctx, usuario: discord.Member, tempo: str, *, motivo: str):
@@ -342,19 +341,31 @@ async def punir(ctx, usuario: discord.Member, tempo: str, *, motivo: str):
     if duracao is None:
         await ctx.send("Formato de tempo inválido! Use algo como '1d 2h 30m'.")
         return
+
     fim_punicao = datetime.utcnow() + duracao
-    cursor.execute("INSERT INTO punicoes (usuario_id, moderador_id, tipo, motivo, duracao, timestamp, ativo) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                   (usuario.id, ctx.author.id, "Mute", motivo, tempo, fim_punicao.strftime('%Y-%m-%d %H:%M:%S'), 1))
+    cursor.execute(
+        "INSERT INTO punicoes (usuario_id, moderador_id, tipo, motivo, duracao, timestamp, ativo) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        (usuario.id, ctx.author.id, "Mute", motivo, tempo, fim_punicao.strftime('%Y-%m-%d %H:%M:%S'), 1)
+    )
     db.commit()
+
     embed = discord.Embed(title="🔴 PUNIÇÃO APLICADA", color=0xFF0000)
     embed.add_field(name="Usuário", value=usuario.mention, inline=False)
     embed.add_field(name="Punido por", value=ctx.author.mention, inline=False)
     embed.add_field(name="Motivo", value=motivo, inline=False)
     embed.add_field(name="Duração", value=tempo, inline=False)
     embed.timestamp = datetime.now(FUSO_HORARIO)
-    await send_log(embed)
+
+    await send_log(bot, embed)
     await ctx.send(f"✅ {usuario.mention} foi punido por {tempo}.")
 
+
+# Função auxiliar para enviar o log
+async def send_log(bot, embed):
+    canal_log = bot.get_channel(LOG_CHANNEL_ID)
+    if canal_log:
+        await canal_log.send(embed=embed)
+        
 # Comando para Banir
 @bot.command()
 @commands.has_permissions(administrator=True)
