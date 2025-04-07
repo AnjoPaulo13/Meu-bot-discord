@@ -37,6 +37,9 @@ e_seta_laranja = "<:setalaranja:1358643165233545467>"
 e_foguete= "<:rocket:1055153521391042591>"
 e_adicionado= "<:adicionado:1055153598511714397>"    
 e_up= "<:up:1358670708238192770>"
+e_down = "<:down:1358672309984165918>"
+
+
 
 # Emojis Gifs
 g_martelo = "<a:gavel_gif:1042876485079412767>"
