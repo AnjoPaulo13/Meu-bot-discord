@@ -98,17 +98,58 @@ async def on_ready():
 CATEGORIAS_TICKET = {
     "suporte": {
         "nome": "Suporte",
-        "descricao": f"Problemas técnicos, bugs ou ajuda com comandos.\n\n**{e_folha} - Suporte ao Jogador**\n\nSeu ticket foi criado e agora está na fila de atendimento da equipe Hypex!\nNosso time analisará sua solicitação e responderá o mais rápido possível.\n\nEquanto isso:\n\n> Evite enviar mensagens repetidas para não atrasar o atendimento.\n> Certifique-se de que todas as informações e provas foram enviadas.\n> Fique de olho nas notificações do Discord!\n\nAgradecemeos por entrar em contato com a Hypex, já já algupém da equipe estará com você!\n\nAtenciosamente,\nEquipe Hypex.",
+        "descricao": (
+            "Problemas técnicos, bugs ou ajuda com comandos."
+            f"\n\n**{e_folha} - Suporte ao Jogador**\n\n"
+            "Seu ticket foi criado e agora está na fila de atendimento da equipe Hypex!\n"
+            "Nosso time analisará sua solicitação e responderá o mais rápido possível.\n\n"
+            "Enquanto isso:\n\n"
+            "> Evite enviar mensagens repetidas para não atrasar o atendimento.\n"
+            "> Certifique-se de que todas as informações e provas foram enviadas.\n"
+            "> Fique de olho nas notificações do Discord!\n\n"
+            "Agradecemos por entrar em contato com a Hypex, já já alguém da equipe estará com você!\n\n"
+            "Atenciosamente,\nEquipe Hypex."
+        ),
         "emoji": "🛠️"
     },
     "denuncia": {
         "nome": "Denúncia",
-        "descricao": f"Reportar usuários, abusos ou violações de regras.\n\n**{g_martelo} Denúncias**\n\nNotou alguma atitude suspeita ou comportamento inadequado dentro do servidor Hypex? Utilize este canal para enviar sua denúncia de forma clara e organizada. Sua colaboração é essencial para mantermos um ambiente justo e seguro para todos.\n\n> Nickname do jogador denunciado:\n> Motivo da denúncia:\n> Data e horário aproximado:\n> Servidor/minigame:\n> Provas (prints, vídeos):\n\n***Importante: Denúncias sem provas ou com informações incomplestas podem ser desconsideradas. Evite denúncias falsas, isso pode resultar em punições para o denunciante.***\n\nAtenciosamente,\nEquipe Hypex.",
+        "descricao": (
+            "Reportar usuários, abusos ou violações de regras."
+            f"\n\n**{g_martelo} Denúncias**\n\n"
+            "Notou alguma atitude suspeita ou comportamento inadequado dentro do servidor Hypex? "
+            "Utilize este canal para enviar sua denúncia de forma clara e organizada. "
+            "Sua colaboração é essencial para mantermos um ambiente justo e seguro para todos.\n\n"
+            "> Nickname do jogador denunciado:\n"
+            "> Motivo da denúncia:\n"
+            "> Data e horário aproximado:\n"
+            "> Servidor/minigame:\n"
+            "> Provas (prints, vídeos):\n\n"
+            "***Importante: Denúncias sem provas ou com informações incompletas podem ser desconsideradas. "
+            "Evite denúncias falsas, isso pode resultar em punições para o denunciante.***\n\n"
+            "Atenciosamente,\nEquipe Hypex."
+        ),
         "emoji": "⚠️"
     },
     "parceria": {
         "nome": "Parceria",
-        "descricao": f"Solicitações de parceria com servidores ou bots.\n\n**{e_youtube} - Solicitação de Parceria.**\n\nEstá interessado(a) em firmar uma parceria com servidor Hypex? Valorizamos colaborações que tragam benefícios mútuos e fortaleçam nossa comunidade. Para que sua proposta seja avaliada corretamente, solicitamos que siga o modelo abaixo ao abrir o ticket:\n\n**Modelo de Solicitação:**\n\n> Nome do projeto ou criador:\n> Tipo de parceria desejada:\n> Plataformas utilizadas:\n> Métricas e dados relevantes:\n> Público-alvo:\n> Proposta detalhada:\n> Link relevantes:\n\nTodas as propostas serão avaliadas com atenção. Apenas solicitações completas e bem estruturadas serão consideradas.\n\nAtenciosamente,\nEquipe Hypex.",
+        "descricao": (
+            "Solicitações de parceria com servidores ou bots."
+            f"\n\n**{e_youtube} - Solicitação de Parceria.**\n\n"
+            "Está interessado(a) em firmar uma parceria com servidor Hypex? "
+            "Valorizamos colaborações que tragam benefícios mútuos e fortaleçam nossa comunidade. "
+            "Para que sua proposta seja avaliada corretamente, solicitamos que siga o modelo abaixo ao abrir o ticket:\n\n"
+            "**Modelo de Solicitação:**\n\n"
+            "> Nome do projeto ou criador:\n"
+            "> Tipo de parceria desejada:\n"
+            "> Plataformas utilizadas:\n"
+            "> Métricas e dados relevantes:\n"
+            "> Público-alvo:\n"
+            "> Proposta detalhada:\n"
+            "> Links relevantes:\n\n"
+            "Todas as propostas serão avaliadas com atenção. Apenas solicitações completas e bem estruturadas serão consideradas.\n\n"
+            "Atenciosamente,\nEquipe Hypex."
+        ),
         "emoji": "🤝"
     }
 }
