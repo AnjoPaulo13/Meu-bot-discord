@@ -168,7 +168,7 @@ class CategoriaTicketSelect(discord.ui.Select):
         embed_info = discord.Embed(
             title=f"Informações sobre o Ticket - {cat_info['nome']}",
             description=descricao_completa[categoria_id],
-            color=discord.Color.grayple()
+            color=discord.Color.from_str("#20B2AA")
         )
         await ticket_channel.send(embed=embed_info)
 
