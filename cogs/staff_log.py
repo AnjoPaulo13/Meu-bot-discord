@@ -26,15 +26,15 @@ class StaffLog(commands.Cog):
     LOG_CHANNEL_ID = 1358433954146947142
 
     def get_staff_rank(self, member: discord.Member):
-        ranked_roles = [
-            (role, self.STAFF_ROLES[role.id])
-            for role in member.roles if role.id in self.STAFF_ROLES
-        ]
-        if not ranked_roles:
-            return 0, None
-        ranked_roles.sort(key=lambda x: x[1], reverse=True)
-        return ranked_roles[0][1], ranked_roles[0][0].name
-
+    ranked_roles = [
+        (role, self.STAFF_ROLES[role.id])
+        for role in member.roles if role.id in self.STAFF_ROLES
+    ]
+    if not ranked_roles:
+        return 0, None
+    ranked_roles.sort(key=lambda x: x[1], reverse=True)
+    return ranked_roles[0][1], ranked_roles[0][0].name.strip()
+    
     @commands.Cog.listener()
     async def on_member_update(self, before: discord.Member, after: discord.Member):
         if before.roles == after.roles:
