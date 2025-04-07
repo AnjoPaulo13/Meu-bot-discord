@@ -31,10 +31,13 @@ e_certo= "<:certo:1357559377921441975>"
 e_errado= "<:errado:1357560063354601653>"
 e_espere= "<:Espera:1357560117121253516>"
 e_folha= "<:folha:1358624331063886036>"
-e_youtube= "<:youtube:1057444840234831933>"
+e_youtube= "<:youtube:1358624299287580916>"
+e_seta= "<:seta:1358643118768914635>"
+e_seta_laranja= "<:setalaranja:1358643165233545467>"
 
 #Emojis Gifs
 g_martelo= "<a:gavel_gif:1042876485079412767>"
+g_alerta= "<a:alert_dks:1042930533010767923>"
 
 # Conectar ao banco de dados
 db = sqlite3.connect("moderacao.db")
