@@ -30,8 +30,8 @@ FUSO_HORARIO = pytz.timezone("America/Sao_Paulo")
 e_certo= "<:certo:1357559377921441975>"
 e_errado= "<:errado:1357560063354601653>"
 e_espere= "<:Espera:1357560117121253516>"
-e_folha= "<:folha:1352244397525303387>"
-e_youtube= "<:youtube:838598886393118750>"
+e_folha= "<:folha:1358624331063886036>"
+e_youtube= "<:youtube:1057444840234831933>"
 
 #Emojis Gifs
 g_martelo= "<a:gavel_gif:1042876485079412767>"
