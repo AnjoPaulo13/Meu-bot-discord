@@ -154,15 +154,15 @@ class CategoriaTicketSelect(discord.ui.Select):
             color=discord.Color.green(),
             timestamp=datetime.utcnow()
         )
-        embed.set_footer(text=f"{cat_info['nome']} | Ticket de {user}", icon_url=user.display_avatar.url)
+        embed.set_footer(text=f"{cat_info['nome']} | Ticket de {user}", icon_url=IMAGEM_HYPEX)
 
         await ticket_channel.send(embed=embed, view=TicketOptionsView())
 
         # Descrição completa conforme a categoria escolhida
         descricao_completa = {
-            "suporte": f"**🛠️ - Suporte ao Jogador**\n\nSeu ticket foi criado e agora está na fila de atendimento da equipe Hypex!\nNosso time analisará sua solicitação e responderá o mais rápido possível.\n\nEnquanto isso:\n\n> Evite enviar mensagens repetidas para não atrasar o atendimento.\n> Certifique-se de que todas as informações e provas foram enviadas.\n> Fique de olho nas notificações do Discord!\n\nAgradecemos por entrar em contato com a Hypex, já já alguém da equipe estará com você!\n\nAtenciosamente,\nEquipe Hypex.",
-            "denuncia": f"**⚠️ Denúncias**\n\nNotou alguma atitude suspeita ou comportamento inadequado dentro do servidor Hypex? Utilize este canal para enviar sua denúncia de forma clara e organizada. Sua colaboração é essencial para mantermos um ambiente justo e seguro para todos.\n\n> Nickname do jogador denunciado:\n> Motivo da denúncia:\n> Data e horário aproximado:\n> Servidor/minigame:\n> Provas (prints, vídeos):\n\n***Importante: Denúncias sem provas ou com informações incompletas podem ser desconsideradas. Evite denúncias falsas, isso pode resultar em punições para o denunciante.***\n\nAtenciosamente,\nEquipe Hypex.",
-            "parceria": f"**🤝 - Solicitação de Parceria**\n\nEstá interessado(a) em firmar uma parceria com o servidor Hypex? Valorizamos colaborações que tragam benefícios mútuos e fortaleçam nossa comunidade. Para que sua proposta seja avaliada corretamente, solicitamos que siga o modelo abaixo ao abrir o ticket:\n\n**Modelo de Solicitação:**\n\n> Nome do projeto ou criador:\n> Tipo de parceria desejada:\n> Plataformas utilizadas:\n> Métricas e dados relevantes:\n> Público-alvo:\n> Proposta detalhada:\n> Links relevantes:\n\nTodas as propostas serão avaliadas com atenção. Apenas solicitações completas e bem estruturadas serão consideradas.\n\nAtenciosamente,\nEquipe Hypex."
+            "suporte": f"**{e_folha} - Suporte ao Jogador**\n\nSeu ticket foi criado e agora está na fila de atendimento da equipe Hypex!\nNosso time analisará sua solicitação e responderá o mais rápido possível.\n\nEnquanto isso:\n\n> Evite enviar mensagens repetidas para não atrasar o atendimento.\n> Certifique-se de que todas as informações e provas foram enviadas.\n> Fique de olho nas notificações do Discord!\n\nAgradecemos por entrar em contato com a Hypex, já já alguém da equipe estará com você!\n\nAtenciosamente,\nEquipe Hypex.",
+            "denuncia": f"**{g_martelo} Denúncias**\n\nNotou alguma atitude suspeita ou comportamento inadequado dentro do servidor Hypex? Utilize este canal para enviar sua denúncia de forma clara e organizada. Sua colaboração é essencial para mantermos um ambiente justo e seguro para todos.\n\n> Nickname do jogador denunciado:\n> Motivo da denúncia:\n> Data e horário aproximado:\n> Servidor/minigame:\n> Provas (prints, vídeos):\n\n***Importante: Denúncias sem provas ou com informações incompletas podem ser desconsideradas. Evite denúncias falsas, isso pode resultar em punições para o denunciante.***\n\nAtenciosamente,\nEquipe Hypex.",
+            "parceria": f"**{e_youtube} - Solicitação de Parceria**\n\nEstá interessado(a) em firmar uma parceria com o servidor Hypex? Valorizamos colaborações que tragam benefícios mútuos e fortaleçam nossa comunidade. Para que sua proposta seja avaliada corretamente, solicitamos que siga o modelo abaixo ao abrir o ticket:\n\n**Modelo de Solicitação:**\n\n> Nome do projeto ou criador:\n> Tipo de parceria desejada:\n> Plataformas utilizadas:\n> Métricas e dados relevantes:\n> Público-alvo:\n> Proposta detalhada:\n> Links relevantes:\n\nTodas as propostas serão avaliadas com atenção. Apenas solicitações completas e bem estruturadas serão consideradas.\n\nAtenciosamente,\nEquipe Hypex."
         }
 
         embed_info = discord.Embed(
@@ -171,6 +171,8 @@ class CategoriaTicketSelect(discord.ui.Select):
             color=discord.Color.from_str("#20B2AA")
         )
         await ticket_channel.send(embed=embed_info)
+        embed_info.set_footer(text="Hypex - Sistema de Tickets", icon_url=IMAGEM_HYPEX)
+
 
         await interaction.response.send_message(f"Seu ticket foi criado: {ticket_channel.mention}", ephemeral=True)
         
