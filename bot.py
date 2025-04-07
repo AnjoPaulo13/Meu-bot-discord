@@ -30,6 +30,11 @@ FUSO_HORARIO = pytz.timezone("America/Sao_Paulo")
 e_certo= "<:certo:1357559377921441975>"
 e_errado= "<:errado:1357560063354601653>"
 e_espere= "<:Espera:1357560117121253516>"
+e_folha= "<:folha:1352244397525303387>"
+e_youtube= "<:youtube:838598886393118750>"
+
+#Emojis Gifs
+g_martelo= "<a:gavel_gif:1042876485079412767>"
 
 # Conectar ao banco de dados
 db = sqlite3.connect("moderacao.db")
@@ -93,17 +98,17 @@ async def on_ready():
 CATEGORIAS_TICKET = {
     "suporte": {
         "nome": "Suporte",
-        "descricao": "Problemas técnicos, bugs ou ajuda com comandos.",
+        "descricao": f"Problemas técnicos, bugs ou ajuda com comandos.\n\n**{e_folha} - Suporte ao Jogador**\n\nSeu ticket foi criado e agora está na fila de atendimento da equipe Hypex!\nNosso time analisará sua solicitação e responderá o mais rápido possível.\n\nEquanto isso:\n\n> Evite enviar mensagens repetidas para não atrasar o atendimento.\n> Certifique-se de que todas as informações e provas foram enviadas.\n> Fique de olho nas notificações do Discord!\n\nAgradecemeos por entrar em contato com a Hypex, já já algupém da equipe estará com você!\n\nAtenciosamente,\nEquipe Hypex.",
         "emoji": "🛠️"
     },
     "denuncia": {
         "nome": "Denúncia",
-        "descricao": "Reportar usuários, abusos ou violações de regras.",
+        "descricao": f"Reportar usuários, abusos ou violações de regras.\n\n**{g_martelo} Denúncias**\n\nNotou alguma atitude suspeita ou comportamento inadequado dentro do servidor Hypex? Utilize este canal para enviar sua denúncia de forma clara e organizada. Sua colaboração é essencial para mantermos um ambiente justo e seguro para todos.\n\n> Nickname do jogador denunciado:\n> Motivo da denúncia:\n> Data e horário aproximado:\n> Servidor/minigame:\n> Provas (prints, vídeos):\n\n***Importante: Denúncias sem provas ou com informações incomplestas podem ser desconsideradas. Evite denúncias falsas, isso pode resultar em punições para o denunciante.***\n\nAtenciosamente,\nEquipe Hypex.",
         "emoji": "⚠️"
     },
     "parceria": {
         "nome": "Parceria",
-        "descricao": "Solicitações de parceria com servidores ou bots.",
+        "descricao": f"Solicitações de parceria com servidores ou bots.\n\n**{e_youtube} - Solicitação de Parceria.**\n\nEstá interessado(a) em firmar uma parceria com servidor Hypex? Valorizamos colaborações que tragam benefícios mútuos e fortaleçam nossa comunidade. Para que sua proposta seja avaliada corretamente, solicitamos que siga o modelo abaixo ao abrir o ticket:\n\n**Modelo de Solicitação:**\n\n> Nome do projeto ou criador:\n> Tipo de parceria desejada:\n> Plataformas utilizadas:\n> Métricas e dados relevantes:\n> Público-alvo:\n> Proposta detalhada:\n> Link relevantes:\n\nTodas as propostas serão avaliadas com atenção. Apenas solicitações completas e bem estruturadas serão consideradas.\n\nAtenciosamente,\nEquipe Hypex.",
         "emoji": "🤝"
     }
 }
