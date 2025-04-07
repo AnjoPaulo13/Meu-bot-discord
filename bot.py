@@ -154,11 +154,11 @@ async def on_member_update(before: discord.Member, after: discord.Member):
     elif old_rank > 0 and new_rank > 0:
         if new_rank > old_rank:
             await channel.send(
-                f"**{e_foguete} - Promovido**;\n\n{e_up} - {after.mention}, promovido de {old_role} para {new_role} da Rede Hypex.\n\n<t:{timestamp_unix}:F>"
+                f"**{e_foguete} - Promovido**;\n\n{e_up} - {after.mention}, promovido a {new_role} da Rede Hypex.\n\n<t:{timestamp_unix}:F>"
             )
         elif new_rank < old_rank:
             await channel.send(
-                f"**{e_foguete} - Rebaixado**;\n\n{e_down} - {after.mention}, rebaixado de {old_role} para {new_role} da Rede Hypex.\n\n<t:{timestamp_unix}:F>"
+                f"**{e_foguete} - Rebaixado**;\n\n{e_down} - {after.mention}, rebaixado a {new_role} da Rede Hypex.\n\n<t:{timestamp_unix}:F>"
             )
 
 # --------Comando ticket---------
