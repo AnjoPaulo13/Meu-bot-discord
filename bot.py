@@ -99,7 +99,7 @@ async def on_ready():
         print(e)
 
 #Staff Log
-    STAFF_ROLES = {
+STAFF_ROLES = {
     1042250719450894361: 1,  # Equipe Staff
     1057811455388430456: 2,  # Builders
     1042250719450894365: 3,  # Ajudantes
