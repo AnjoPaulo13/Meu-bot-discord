@@ -498,6 +498,7 @@ async def send_log(embed):
         await canal_log.send(embed=embed)
         
 # Rodar o bot
-bot.add_cog(TicketsCog(bot))
+async def setup(bot):
+    await bot.add_cog(TicketsCog(bot))
 if __name__ == "__main__":
     bot.run(DISCORD_TOKEN)
