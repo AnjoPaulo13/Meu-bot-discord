@@ -6,16 +6,11 @@ class StaffLog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         
-# Definir fuso horário para Brasília
-    data_staff = datetime.now()
-    timestamp_unix = int(data_staff.timestamp())
-
-
-#Emojis        
-e_foguete= "<:rocket:1055153521391042591>"
-e_adicionado= "<:adicionado:1055153598511714397>"
-e_up= "<:up:1358670708238192770>"
-e_down= "<:down:1358672309984165918>"
+    # Emojis        
+    e_foguete = "<:rocket:1055153521391042591>"
+    e_adicionado = "<:adicionado:1055153598511714397>"
+    e_up = "<:up:1358670708238192770>"
+    e_down = "<:down:1358672309984165918>"
 
     STAFF_ROLES = {
         1042250719450894361: 1,  # Equipe Staff
@@ -49,18 +44,29 @@ e_down= "<:down:1358672309984165918>"
         if not channel:
             return
 
+        # Atualiza o timestamp dinamicamente
+        timestamp_unix = int(datetime.now().timestamp())
+
         old_rank, old_role = self.get_staff_rank(before)
         new_rank, new_role = self.get_staff_rank(after)
 
         if old_rank == 0 and new_rank > 0:
-            await channel.send(f"**{e_foguete} - Adicionado**;\n\n{e_adicionado} - {after.mention}, adicionado como {new_role} da Rede Hypex.\n\n<t:{timestamp_unix}:F>")
+            await channel.send(
+                f"**{self.e_foguete} - Adicionado**;\n\n{self.e_adicionado} - {after.mention}, adicionado como {new_role} da Rede Hypex.\n\n<t:{timestamp_unix}:F>"
+            )
         elif old_rank > 0 and new_rank == 0:
-            await channel.send(f"**{e_foguete} - Removido**;\n\n⛔ - {after.mention}, removido da equipe de ({old_role}) da Rede Hypex.\n\n<t:{timestamp_unix}:F>")
+            await channel.send(
+                f"**{self.e_foguete} - Removido**;\n\n⛔ - {after.mention}, removido da equipe de ({old_role}) da Rede Hypex.\n\n<t:{timestamp_unix}:F>"
+            )
         elif old_rank > 0 and new_rank > 0:
             if new_rank > old_rank:
-                await channel.send(f"**{e_foguete} - Promovido**;\n\n{e_up} - {after.mention}, promovido de {old_role} para {new_role} da Rede Hypex.\n\n<t:{timestamp_unix}:F>")
+                await channel.send(
+                    f"**{self.e_foguete} - Promovido**;\n\n{self.e_up} - {after.mention}, promovido de {old_role} para {new_role} da Rede Hypex.\n\n<t:{timestamp_unix}:F>"
+                )
             elif new_rank < old_rank:
-                await channel.send(f"**{e_foguete} - Rebaixado**;\n\n{e_down} - {after.mention}, rebaixado de {old_role} para {new_role} da Rede Hypex.\n\n<t:{timestamp_unix}:F>")
+                await channel.send(
+                    f"**{self.e_foguete} - Rebaixado**;\n\n{self.e_down} - {after.mention}, rebaixado de {old_role} para {new_role} da Rede Hypex.\n\n<t:{timestamp_unix}:F>"
+                )
 
 async def setup(bot):
     await bot.add_cog(StaffLog(bot))
