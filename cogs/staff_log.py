@@ -1,9 +1,21 @@
 import discord
 from discord.ext import commands
+from datetime import datetime, timedelta
 
 class StaffLog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        
+# Definir fuso horário para Brasília
+    data_staff = datetime.now()
+    timestamp_unix = int(data_staff.timestamp())
+
+
+#Emojis        
+e_foguete= "<:rocket:1055153521391042591>"
+e_adicionado= "<:adicionado:1055153598511714397>"
+e_up= "<:up:1358670708238192770>"
+e_down= "<:down:1358672309984165918>"
 
     STAFF_ROLES = {
         1042250719450894361: 1,  # Equipe Staff
@@ -41,14 +53,14 @@ class StaffLog(commands.Cog):
         new_rank, new_role = self.get_staff_rank(after)
 
         if old_rank == 0 and new_rank > 0:
-            await channel.send(f"{after.mention} foi **adicionado** à equipe como `{new_role}`.")
+            await channel.send(f"**{e_foguete} - Adicionado**;\n\n{e_adicionado} - {after.mention}, adicionado como {new_role} da Rede Hypex.\n\n<t:{timestamp_unix}:F>")
         elif old_rank > 0 and new_rank == 0:
-            await channel.send(f"{after.mention} foi **removido** da equipe de staff (`{old_role}`).")
+            await channel.send(f"**{e_foguete} - Removido**;\n\n⛔ - {after.mention}, removido da equipe de ({old_role}) da Rede Hypex.\n\n<t:{timestamp_unix}:F>")
         elif old_rank > 0 and new_rank > 0:
             if new_rank > old_rank:
-                await channel.send(f"{after.mention} foi **promovido** de `{old_role}` para `{new_role}`.")
+                await channel.send(f"**{e_foguete} - Promovido**;\n\n{e_up} - {after.mention}, promovido de {old_role} para {new_role} da Rede Hypex.\n\n<t:{timestamp_unix}:F>")
             elif new_rank < old_rank:
-                await channel.send(f"{after.mention} foi **rebaixado** de `{old_role}` para `{new_role}`.")
+                await channel.send(f"**{e_foguete} - Rebaixado**;\n\n{e_down} - {after.mention}, rebaixado de {old_role} para {new_role} da Rede Hypex.\n\n<t:{timestamp_unix}:F>")
 
 async def setup(bot):
     await bot.add_cog(StaffLog(bot))
