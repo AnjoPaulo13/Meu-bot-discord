@@ -170,9 +170,9 @@ class CategoriaTicketSelect(discord.ui.Select):
             description=descricao_completa[categoria_id],
             color=discord.Color.from_str("#20B2AA")
         )
-        await ticket_channel.send(embed=embed_info)
         embed_info.set_footer(text="Hypex - Sistema de Tickets", icon_url=IMAGEM_HYPEX)
-
+        await ticket_channel.send(embed=embed_info)
+        
 
         await interaction.response.send_message(f"Seu ticket foi criado: {ticket_channel.mention}", ephemeral=True)
         
