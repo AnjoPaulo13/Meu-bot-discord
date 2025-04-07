@@ -9,17 +9,19 @@ import asyncio
 import logging
 import pytz
 import random
-
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Número aleatório
-num_aleat = random.randint(1, 100000000000000000000000000000)
+#número aleatório
+num_aleat = random.randint(1,100000000000000000000000000000)
 
 # Carregar variáveis de ambiente
 load_dotenv()
-DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
+TOKEN = os.getenv("DISCORD_TOKEN")
 PREFIX = "hy!"
+
+intents = discord.Intents.all()
+bot = commands.Bot(command_prefix=PREFIX, intents=intents)
 
 # Definir fuso horário para Brasília
 FUSO_HORARIO = pytz.timezone("America/Sao_Paulo")
@@ -32,6 +34,9 @@ e_folha = "<:folha:1358624331063886036>"
 e_youtube = "<:youtube:1358624299287580916>"
 e_seta = "<:seta:1358643118768914635>"
 e_seta_laranja = "<:setalaranja:1358643165233545467>"
+e_foguete= "<:rocket:1055153521391042591>"
+e_adicionado= "<:adicionado:1055153598511714397>"    
+e_up= "<:up:1358670708238192770>"
 
 # Emojis Gifs
 g_martelo = "<a:gavel_gif:1042876485079412767>"
@@ -65,9 +70,10 @@ def parse_time(time_str):
     total_seconds = sum(int(value) * TIME_MULTIPLIERS[unit] for value, unit in matches)
     return timedelta(seconds=total_seconds)
 
-# IDs e canais
+# Canal de logs
 LOG_CHANNEL_ID = 1043916988961017916
 LOG_CHANNEL_ID_TICKET = 1358514192763715755
+# IDs dos canais
 CANAL_REGRAS = 1042250719920664639
 CANAL_ATENDIMENTO = 1042250720583372964
 CANAL_ENVIO = 1356009108402340162
@@ -78,26 +84,79 @@ ADMIN_ROLE_ID = 1042250719450894361
 # ID da categoria de tickets
 TICKET_CATEGORY_ID = 1358475716315975716
 
-# Imagens
+
+#imagem
 IMAGEM_HYPEX = "https://cdn.discordapp.com/attachments/1356012837264298196/1356012878817132694/16693356531179.png?ex=67eef967&is=67eda7e7&hm=692e9393bdb4a26d372e5213498db246b08fd43fa19c4210eb971d7600365a1a&"
 GIF_HYPEX = "https://cdn.discordapp.com/attachments/1357474337501745183/1357575717331931306/hypex_pulsante.gif?ex=67f0b469&is=67ef62e9&hm=19769528768c9d3430582d803f4459a97331533ee36d5565866ddc5f7503d3de&"
 
-# Criação do bot
-intents = discord.Intents.all()
-bot = commands.Bot(command_prefix=PREFIX, intents=intents)
+@bot.event
+async def on_ready():
+    print(f"Bot conectado como {bot.user}")
+    try:
+        synced = await bot.tree.sync()
+        print(f"Comandos sincronizados: {len(synced)}")
+    except Exception as e:
+        print(e)
 
-class TicketsCog(commands.Cog):
-    def __init__(self, bot: commands.Bot):
-        self.bot = bot
+#Staff Log
+    STAFF_ROLES = {
+    1042250719450894361: 1,  # Equipe Staff
+    1057811455388430456: 2,  # Builders
+    1042250719450894365: 3,  # Ajudantes
+    1042250719471882290: 4,  # Moderadores
+    1042250719471882291: 5,  # Desenvolvedores
+    1042250719471882292: 6,  # Administrador
+    1042250719471882293: 7,  # Gerentes
+    1042250719471882296: 8,  # Master
+}
 
-    @commands.Cog.listener()
-    async def on_ready(self):
-        print(f"Cog carregado: TicketsCog | Bot conectado como {self.bot.user}")
-        try:
-            synced = await self.bot.tree.sync()
-            print(f"Comandos sincronizados: {len(synced)}")
-        except Exception as e:
-            print(e)
+LOG_CHANNEL_ID = 1358433954146947142
+
+def get_staff_rank(member: discord.Member):
+    ranked_roles = [
+        (role, STAFF_ROLES[role.id])
+        for role in member.roles if role.id in STAFF_ROLES
+    ]
+    if not ranked_roles:
+        return 0, None
+    ranked_roles.sort(key=lambda x: x[1], reverse=True)
+    return ranked_roles[0][1], ranked_roles[0][0].name.strip()
+
+@bot.event
+async def on_ready():
+    print(f"Logado como {bot.user}")
+
+@bot.event
+async def on_member_update(before: discord.Member, after: discord.Member):
+    if before.roles == after.roles:
+        return
+
+    channel = after.guild.get_channel(LOG_CHANNEL_ID)
+    if not channel:
+        return
+
+    timestamp_unix = int(datetime.now().timestamp())
+
+    old_rank, old_role = get_staff_rank(before)
+    new_rank, new_role = get_staff_rank(after)
+
+    if old_rank == 0 and new_rank > 0:
+        await channel.send(
+            f"**{e_foguete} - Adicionado**;\n\n{e_adicionado} - {after.mention}, adicionado como {new_role} da Rede Hypex.\n\n<t:{timestamp_unix}:F>"
+        )
+    elif old_rank > 0 and new_rank == 0:
+        await channel.send(
+            f"**{e_foguete} - Removido**;\n\n⛔ - {after.mention}, removido da equipe de ({old_role}) da Rede Hypex.\n\n<t:{timestamp_unix}:F>"
+        )
+    elif old_rank > 0 and new_rank > 0:
+        if new_rank > old_rank:
+            await channel.send(
+                f"**{e_foguete} - Promovido**;\n\n{e_up} - {after.mention}, promovido de {old_role} para {new_role} da Rede Hypex.\n\n<t:{timestamp_unix}:F>"
+            )
+        elif new_rank < old_rank:
+            await channel.send(
+                f"**{e_foguete} - Rebaixado**;\n\n{e_down} - {after.mention}, rebaixado de {old_role} para {new_role} da Rede Hypex.\n\n<t:{timestamp_unix}:F>"
+            )
 
 # --------Comando ticket---------
 
@@ -498,7 +557,4 @@ async def send_log(embed):
         await canal_log.send(embed=embed)
         
 # Rodar o bot
-async def setup(bot):
-    await bot.add_cog(TicketsCog(bot))
-if __name__ == "__main__":
-    bot.run(DISCORD_TOKEN)
+bot.run(TOKEN)
