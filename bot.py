@@ -9,35 +9,33 @@ import asyncio
 import logging
 import pytz
 import random
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-#número aleatório
-num_aleat = random.randint(1,100000000000000000000000000000)
+# Número aleatório
+num_aleat = random.randint(1, 100000000000000000000000000000)
 
 # Carregar variáveis de ambiente
 load_dotenv()
-TOKEN = os.getenv("DISCORD_TOKEN")
+DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 PREFIX = "hy!"
-
-intents = discord.Intents.all()
-bot = commands.Bot(command_prefix=PREFIX, intents=intents)
 
 # Definir fuso horário para Brasília
 FUSO_HORARIO = pytz.timezone("America/Sao_Paulo")
 
-#Emojis
-e_certo= "<:certo:1357559377921441975>"
-e_errado= "<:errado:1357560063354601653>"
-e_espere= "<:Espera:1357560117121253516>"
-e_folha= "<:folha:1358624331063886036>"
-e_youtube= "<:youtube:1358624299287580916>"
-e_seta= "<:seta:1358643118768914635>"
-e_seta_laranja= "<:setalaranja:1358643165233545467>"
+# Emojis
+e_certo = "<:certo:1357559377921441975>"
+e_errado = "<:errado:1357560063354601653>"
+e_espere = "<:Espera:1357560117121253516>"
+e_folha = "<:folha:1358624331063886036>"
+e_youtube = "<:youtube:1358624299287580916>"
+e_seta = "<:seta:1358643118768914635>"
+e_seta_laranja = "<:setalaranja:1358643165233545467>"
 
-#Emojis Gifs
-g_martelo= "<a:gavel_gif:1042876485079412767>"
-g_alerta= "<a:alert_dks:1042930533010767923>"
+# Emojis Gifs
+g_martelo = "<a:gavel_gif:1042876485079412767>"
+g_alerta = "<a:alert_dks:1042930533010767923>"
 
 # Conectar ao banco de dados
 db = sqlite3.connect("moderacao.db")
@@ -67,10 +65,9 @@ def parse_time(time_str):
     total_seconds = sum(int(value) * TIME_MULTIPLIERS[unit] for value, unit in matches)
     return timedelta(seconds=total_seconds)
 
-# Canal de logs
+# IDs e canais
 LOG_CHANNEL_ID = 1043916988961017916
 LOG_CHANNEL_ID_TICKET = 1358514192763715755
-# IDs dos canais
 CANAL_REGRAS = 1042250719920664639
 CANAL_ATENDIMENTO = 1042250720583372964
 CANAL_ENVIO = 1356009108402340162
@@ -81,19 +78,26 @@ ADMIN_ROLE_ID = 1042250719450894361
 # ID da categoria de tickets
 TICKET_CATEGORY_ID = 1358475716315975716
 
-
-#imagem
+# Imagens
 IMAGEM_HYPEX = "https://cdn.discordapp.com/attachments/1356012837264298196/1356012878817132694/16693356531179.png?ex=67eef967&is=67eda7e7&hm=692e9393bdb4a26d372e5213498db246b08fd43fa19c4210eb971d7600365a1a&"
 GIF_HYPEX = "https://cdn.discordapp.com/attachments/1357474337501745183/1357575717331931306/hypex_pulsante.gif?ex=67f0b469&is=67ef62e9&hm=19769528768c9d3430582d803f4459a97331533ee36d5565866ddc5f7503d3de&"
 
-@bot.event
-async def on_ready():
-    print(f"Bot conectado como {bot.user}")
-    try:
-        synced = await bot.tree.sync()
-        print(f"Comandos sincronizados: {len(synced)}")
-    except Exception as e:
-        print(e)
+# Criação do bot
+intents = discord.Intents.all()
+bot = commands.Bot(command_prefix=PREFIX, intents=intents)
+
+class TicketsCog(commands.Cog):
+    def __init__(self, bot: commands.Bot):
+        self.bot = bot
+
+    @commands.Cog.listener()
+    async def on_ready(self):
+        print(f"Cog carregado: TicketsCog | Bot conectado como {self.bot.user}")
+        try:
+            synced = await self.bot.tree.sync()
+            print(f"Comandos sincronizados: {len(synced)}")
+        except Exception as e:
+            print(e)
 
 # --------Comando ticket---------
 
@@ -494,4 +498,6 @@ async def send_log(embed):
         await canal_log.send(embed=embed)
         
 # Rodar o bot
-bot.run(TOKEN)
+bot.add_cog(TicketsCog(bot))
+if __name__ == "__main__":
+    bot.run(DISCORD_TOKEN)
