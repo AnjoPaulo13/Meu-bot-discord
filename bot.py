@@ -116,7 +116,7 @@ STAFF_ROLES = {
     1042250719471882296: 8,  # Master
 }
 
-LOG_CHANNEL_ID = 1358433954146947142
+LOG_CHANNEL_ID_STAFF = 1358433954146947142
 
 def get_staff_rank(member: discord.Member):
     ranked_roles = [
@@ -137,7 +137,7 @@ async def on_member_update(before: discord.Member, after: discord.Member):
     if before.roles == after.roles:
         return
 
-    channel = after.guild.get_channel(LOG_CHANNEL_ID)
+    channel = after.guild.get_channel(LOG_CHANNEL_ID_STAFF)
     if not channel:
         return
 
