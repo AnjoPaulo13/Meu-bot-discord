@@ -380,7 +380,7 @@ async def kick(ctx, usuario: discord.Member, *, motivo: str):
         await usuario.kick(reason=motivo)
         embed = discord.Embed(title="👢 **Usuário Expulso**", description=f"O usuário foi removido do servidor.", color=0xFFA500)
         embed.set_author(name=ctx.author.name, icon_url=ctx.author.display_avatar.url)
-        embed.set_thumbnail(url=usuario.avatar_url)
+        embed.set_thumbnail(url=usuario.display_avatar.url)
         embed.add_field(name="Usuário", value=usuario.mention, inline=False)
         embed.add_field(name="Motivo", value=motivo, inline=False)
         embed.add_field(name="Realizado por", value=ctx.author.mention, inline=False)
