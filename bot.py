@@ -409,7 +409,7 @@ async def punir(ctx, usuario: discord.Member, tempo: str, *, motivo: str):
 
     embed = discord.Embed(title="🔴 **PUNIÇÃO APLICADA**", description="A punição foi aplicada com sucesso.", color=0xFF0000)
     embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar.url if ctx.author.avatar else None)
-    embed.set_thumbnail(url=usuario.avatar_url)
+    embed.set_thumbnail(url=usuario.display_avatar.url)
     embed.add_field(name="Usuário", value=usuario.mention, inline=False)
     embed.add_field(name="Punido por", value=ctx.author.mention, inline=False)
     embed.add_field(name="Motivo", value=motivo, inline=False)
@@ -427,8 +427,8 @@ async def banir(ctx, usuario: discord.Member, *, motivo: str):
     try:
         await usuario.ban(reason=motivo)
         embed = discord.Embed(title="🚨 **BANIMENTO**", description="O usuário foi banido do servidor.", color=0xFF0000)
-        embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
-        embed.set_thumbnail(url=usuario.avatar_url)
+        embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar.url if ctx.author.avatar else None)
+        embed.set_thumbnail(url=usuario.display_avatar.url)
         embed.add_field(name="Usuário", value=usuario.mention, inline=False)
         embed.add_field(name="Banido por", value=ctx.author.mention, inline=False)
         embed.add_field(name="Motivo", value=motivo, inline=False)
@@ -471,7 +471,7 @@ async def desbanir(ctx, usuario_id: int):
             color=discord.Color.green(),
             timestamp=datetime.now(FUSO_HORARIO)
         )
-        embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
+        embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar.url if ctx.author.avatar else None)
         embed.add_field(name="Usuário", value=nome_formatado, inline=False)
         embed.add_field(name="Desbanido por", value=ctx.author.mention, inline=False)
 
@@ -527,8 +527,8 @@ async def remover_punicao(ctx, usuario: discord.Member):
         description=f"A punição de {usuario.mention} foi removida com sucesso.",
         color=0xFFFF00
     )
-    embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
-    embed.set_thumbnail(url=usuario.avatar_url)
+    embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar.url if ctx.author.avatar else None)
+    embed.set_thumbnail(url=usuario.display_avatar.url)
     embed.add_field(name="Usuário", value=usuario.mention, inline=False)
     embed.add_field(name="Removido por", value=ctx.author.mention, inline=False)
 
