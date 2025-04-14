@@ -664,7 +664,7 @@ class StrikePaginator(View):
                 data_formatada = data_brt.strftime('%d/%m/%Y %H:%M')
                 
                 status = "✅ Ativo" if ativo == 1 else "❌ Removido"
-                detalhes += f"**{idx}.** `{tipo}` - *{motivo}* (`{data}`) • {status}\n"
+                detalhes += f"**{idx}.** `{tipo}` - *{motivo}* (`{data_brt}`) • {status}\n"
             embed.add_field(name="Detalhes", value=detalhes, inline=False)
 
         embed.set_footer(text=f"Página {self.pagina + 1}/{total_paginas} • Filtro: {self.filtro.capitalize()}")
