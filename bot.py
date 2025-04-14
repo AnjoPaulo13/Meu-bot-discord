@@ -26,10 +26,11 @@ intents = discord.Intents.all()
 bot = commands.Bot(command_prefix=PREFIX, intents=intents)
 
 # Definir fuso horário para Brasília
-FUSO_HORARIO = pytz.timezone("America/Sao_Paulo")
-timestamp = datetime.utcnow().replace(tzinfo=pytz.utc)
-timestamp_brt = timestamp.astimezone(FUSO_HORARIO)
 
+FUSO_HORARIO = pytz.timezone("America/Sao_Paulo")
+data_sem_tz = datetime.strptime(timestamp, "%d-%m-%Y %H:%M:%S")
+data_utc = data_sem_tz.replace(tzinfo=pytz.utc)
+timestamp_brt = data_utc.astimezone(FUSO_HORARIO)
 
 # Emojis
 e_certo = "<:certo:1357559377921441975>"
@@ -659,7 +660,7 @@ class StrikePaginator(View):
         else:
             detalhes = ""
             for idx, (tipo, motivo, timestamp, ativo) in enumerate(pag_punicoes, start=inicio + 1):
-                data_br = timestamp.astimezone(FUSO_HORARIO)
+                data_br = timestamp_brt.astimezone(FUSO_HORARIO)
                 data = data_br.strftime('%d/%m/%Y %H:%M')
                 
                 status = "✅ Ativo" if ativo == 1 else "❌ Removido"
