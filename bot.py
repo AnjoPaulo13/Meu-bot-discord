@@ -76,6 +76,7 @@ def parse_time(time_str):
 # Canal de logs
 LOG_CHANNEL_ID = 1043916988961017916
 LOG_CHANNEL_ID_TICKET = 1358514192763715755
+
 # IDs dos canais
 CANAL_REGRAS = 1042250719920664639
 CANAL_ATENDIMENTO = 1042250720583372964
@@ -373,17 +374,22 @@ async def revisar(ctx, usuario: discord.Member, status: str, *, motivo: str = "N
 async def kick(ctx, usuario: discord.Member, *, motivo: str):
     try:
         await usuario.kick(reason=motivo)
-        embed = discord.Embed(title="👢 Usuário Expulso", color=0xFFA500)
+        embed = discord.Embed(title="👢 **Usuário Expulso**", description=f"O usuário foi removido do servidor.", color=0xFFA500)
+        embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
+        embed.set_thumbnail(url=usuario.avatar_url)
         embed.add_field(name="Usuário", value=usuario.mention, inline=False)
         embed.add_field(name="Motivo", value=motivo, inline=False)
+        embed.add_field(name="Realizado por", value=ctx.author.mention, inline=False)
+        embed.set_footer(text=f"Expulsão realizada em {datetime.now(FUSO_HORARIO).strftime('%d/%m/%Y %H:%M:%S')}")
         embed.timestamp = datetime.now(FUSO_HORARIO)
         await send_log(embed)
-        await ctx.send(f"{usuario.mention} foi expulso. Motivo: {motivo}")
+        await ctx.send(embed=embed)
     except discord.Forbidden:
         await ctx.send("Não tenho permissão para expulsar esse usuário.")
     except discord.HTTPException:
         await ctx.send("Ocorreu um erro ao tentar expulsar o usuário.")
         
+# Comando de Punição        
 @bot.command()
 @commands.has_permissions(administrator=True)
 async def punir(ctx, usuario: discord.Member, tempo: str, *, motivo: str):
@@ -399,15 +405,18 @@ async def punir(ctx, usuario: discord.Member, tempo: str, *, motivo: str):
     )
     db.commit()
 
-    embed = discord.Embed(title="🔴 PUNIÇÃO APLICADA", color=0xFF0000)
+    embed = discord.Embed(title="🔴 **PUNIÇÃO APLICADA**", description="A punição foi aplicada com sucesso.", color=0xFF0000)
+    embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
+    embed.set_thumbnail(url=usuario.avatar_url)
     embed.add_field(name="Usuário", value=usuario.mention, inline=False)
     embed.add_field(name="Punido por", value=ctx.author.mention, inline=False)
     embed.add_field(name="Motivo", value=motivo, inline=False)
     embed.add_field(name="Duração", value=tempo, inline=False)
+    embed.set_footer(text=f"Punição aplicada em {datetime.now(FUSO_HORARIO).strftime('%d/%m/%Y %H:%M:%S')}")
     embed.timestamp = datetime.now(FUSO_HORARIO)
 
     await send_log(embed)
-    await ctx.send(f"✅ {usuario.mention} foi punido por {tempo}.")
+    await ctx.send(embed=embed)
     
 # Comando para Banir
 @bot.command()
@@ -415,18 +424,22 @@ async def punir(ctx, usuario: discord.Member, tempo: str, *, motivo: str):
 async def banir(ctx, usuario: discord.Member, *, motivo: str):
     try:
         await usuario.ban(reason=motivo)
-        embed = discord.Embed(title="🚨 BANIMENTO", color=0xFF0000)
+        embed = discord.Embed(title="🚨 **BANIMENTO**", description="O usuário foi banido do servidor.", color=0xFF0000)
+        embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
+        embed.set_thumbnail(url=usuario.avatar_url)
         embed.add_field(name="Usuário", value=usuario.mention, inline=False)
         embed.add_field(name="Banido por", value=ctx.author.mention, inline=False)
         embed.add_field(name="Motivo", value=motivo, inline=False)
+        embed.set_footer(text=f"Banimento realizado em {datetime.now(FUSO_HORARIO).strftime('%d/%m/%Y %H:%M:%S')}")
         embed.timestamp = datetime.now(FUSO_HORARIO)
+
         await send_log(embed)
-        await ctx.send(f"🚨 {usuario.mention} foi **banido**. Motivo: {motivo}")
+        await ctx.send(embed=embed)
     except discord.Forbidden:
         await ctx.send("Não tenho permissão para banir esse usuário.")
     except discord.HTTPException:
         await ctx.send("Ocorreu um erro ao tentar banir o usuário.")
-
+        
 # Comando para Desbanir
 @bot.command()
 @commands.has_permissions(administrator=True)
@@ -451,10 +464,12 @@ async def desbanir(ctx, usuario_id: int):
         nome_formatado = f"{usuario.name}#{usuario.discriminator} (`{usuario.id}`)"
 
         embed = discord.Embed(
-            title="✅ DESBANIMENTO",
+            title="✅ **DESBANIMENTO**",
+            description="O usuário foi desbanido com sucesso.",
             color=discord.Color.green(),
             timestamp=datetime.now(FUSO_HORARIO)
         )
+        embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
         embed.add_field(name="Usuário", value=nome_formatado, inline=False)
         embed.add_field(name="Desbanido por", value=ctx.author.mention, inline=False)
 
@@ -463,7 +478,7 @@ async def desbanir(ctx, usuario_id: int):
             embed.set_thumbnail(url=usuario.avatar.url)
 
         await send_log(embed)
-        await ctx.send(f"✅ `{nome_formatado}` foi **desbanido** com sucesso.")
+        await ctx.send(embed=embed)
     except discord.Forbidden:
         await ctx.send("Não tenho permissão para desbanir esse usuário.")
     except discord.HTTPException as e:
@@ -473,54 +488,314 @@ async def desbanir(ctx, usuario_id: int):
 @bot.command()
 @commands.has_permissions(administrator=True)
 async def remover_punicao(ctx, usuario: discord.Member):
+    # Verifica se o usuário tem punições ativas
+    cursor.execute("SELECT * FROM punicoes WHERE usuario_id = ? AND ativo = 1", (usuario.id,))
+    punições_ativas = cursor.fetchall()
+
+    if not punições_ativas:
+        await ctx.send(f"⚠️ {usuario.mention} não tem punições ativas para remover.")
+        return
+
+    # Pergunta ao moderador se ele tem certeza da remoção
+    confirmation_message = await ctx.send(f"Tem certeza que deseja remover as punições de {usuario.mention}? Responda com 'sim' para confirmar.")
+    
+    def check(msg):
+        return msg.author == ctx.author and msg.channel == ctx.channel and msg.content.lower() in ['sim', 'não']
+    
+    try:
+        response = await bot.wait_for('message', check=check, timeout=30)
+        if response.content.lower() == 'não':
+            await confirmation_message.delete()
+            await ctx.send(f"Remoção de punição cancelada para {usuario.mention}.")
+            return
+        elif response.content.lower() != 'sim':
+            await confirmation_message.delete()
+            await ctx.send("Resposta inválida. A remoção de punição foi cancelada.")
+            return
+    except asyncio.TimeoutError:
+        await confirmation_message.delete()
+        await ctx.send(f"Tempo esgotado para confirmar a remoção de punição para {usuario.mention}. Ação cancelada.")
+
+    # Remover punição
     cursor.execute("UPDATE punicoes SET ativo = 0 WHERE usuario_id = ? AND ativo = 1", (usuario.id,))
     db.commit()
-    embed = discord.Embed(title="⚠️ PUNIÇÃO REMOVIDA", color=0xFFFF00)
+
+    embed = discord.Embed(
+        title="⚠️ **PUNIÇÃO REMOVIDA**", 
+        description=f"A punição de {usuario.mention} foi removida com sucesso.",
+        color=0xFFFF00
+    )
+    embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
+    embed.set_thumbnail(url=usuario.avatar_url)
     embed.add_field(name="Usuário", value=usuario.mention, inline=False)
     embed.add_field(name="Removido por", value=ctx.author.mention, inline=False)
-    embed.timestamp = datetime.now(FUSO_HORARIO)
-    await send_log(embed)
-    await ctx.send(f"⚠️ Punição de {usuario.mention} removida!")
 
+    # Adiciona informações sobre a punição removida
+    punição_info = []
+    for punição in punições_ativas:
+        tipo = punição[2]  # Tipo da punição (ex: Mute, Ban)
+        motivo = punição[3]  # Motivo da punição
+        punição_info.append(f"**{tipo}** - Motivo: {motivo}")
+
+    embed.add_field(name="Punições Removidas", value="\n".join(punição_info), inline=False)
+    embed.set_footer(text=f"Punição removida em {datetime.now(FUSO_HORARIO).strftime('%d/%m/%Y %H:%M:%S')}")
+    embed.timestamp = datetime.now(FUSO_HORARIO)
+
+    await send_log(embed)
+    await ctx.send(embed=embed)
+    
 # Comando para Remover Strike
-@bot.command()
+@bot.command(name="remover_strike")
 @commands.has_permissions(administrator=True)
-async def remover_strike(ctx, usuario: discord.Member):
-    cursor.execute("DELETE FROM punicoes WHERE usuario_id = ? AND ativo = 1 LIMIT 1", (usuario.id,))
-    db.commit()
-    embed = discord.Embed(title="✅ STRIKE REMOVIDO", color=0x00FF00)
-    embed.add_field(name="Usuário", value=usuario.mention, inline=False)
-    embed.add_field(name="Removido por", value=ctx.author.mention, inline=False)
-    embed.timestamp = datetime.now(FUSO_HORARIO)
-    await send_log(embed)
-    await ctx.send(f"✅ Um strike foi removido de {usuario.mention}.")
+async def remover_strike(ctx, usuario: discord.Member, quantidade: int = 1):
+    if quantidade < 1:
+        await ctx.send("⚠️ A quantidade deve ser pelo menos 1.")
+        return
 
+    # Buscar strikes ativos
+    cursor.execute(
+        "SELECT id, tipo, motivo, timestamp FROM punicoes WHERE usuario_id = ? AND ativo = 1 LIMIT ?",
+        (usuario.id, quantidade)
+    )
+    strikes = cursor.fetchall()
+
+    if not strikes:
+        await ctx.send(f"⚠️ {usuario.mention} não possui strikes ativos.")
+        return
+
+    # Montar lista de strikes encontrados
+    descricao_strikes = ""
+    for i, (strike_id, tipo, motivo, timestamp) in enumerate(strikes, start=1):
+        descricao_strikes += f"**{i}.** `{tipo}` - {motivo} *(Aplicado em: {timestamp})*\n"
+
+    confirm_embed = discord.Embed(
+        title="⚠️ Confirmar Remoção de Strike(s)",
+        description=f"Você está prestes a remover **{len(strikes)}** strike(s) de {usuario.mention}.\n\n{descricao_strikes}",
+        color=discord.Color.orange()
+    )
+    confirm_embed.set_footer(text="Responda com 'sim' para confirmar ou 'não' para cancelar.")
+    await ctx.send(embed=confirm_embed)
+
+    def check(msg):
+        return msg.author == ctx.author and msg.channel == ctx.channel and msg.content.lower() in ['sim', 'não']
+
+    try:
+        resposta = await bot.wait_for('message', timeout=30, check=check)
+        if resposta.content.lower() == 'não':
+            await ctx.send("❌ Remoção de strikes cancelada.")
+            return
+    except asyncio.TimeoutError:
+        await ctx.send("⏰ Tempo esgotado. Remoção de strikes cancelada.")
+        return
+
+    # Remover os strikes
+    ids_para_remover = [str(s[0]) for s in strikes]
+    query = f"UPDATE punicoes SET ativo = 0 WHERE id IN ({','.join(['?']*len(ids_para_remover))})"
+    cursor.execute(query, ids_para_remover)
+    db.commit()
+
+    # Embed de confirmação
+    embed = discord.Embed(
+        title="✅ Strikes Removidos com Sucesso",
+        description=f"Foram removidos **{len(strikes)}** strike(s) de {usuario.mention}.",
+        color=discord.Color.green(),
+        timestamp=datetime.now(FUSO_HORARIO)
+    )
+    embed.set_thumbnail(url=usuario.avatar.url if usuario.avatar else discord.Embed.Empty)
+    embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar.url if ctx.author.avatar else None)
+    embed.add_field(name="Moderador", value=ctx.author.mention, inline=False)
+    embed.add_field(name="Resumo", value=descricao_strikes, inline=False)
+    embed.set_footer(text="Remoção registrada")
+
+    await send_log(embed)
+    await ctx.send(embed=embed)
+    
 # Comando para verificar strikes
-@bot.command()
+class StrikePaginator(View):
+    def __init__(self, ctx, usuario, punicoes):
+        super().__init__(timeout=60)
+        self.ctx = ctx
+        self.usuario = usuario
+        self.punicoes = punicoes
+        self.filtro = "todos"  # "todos", "ativos", "removidos"
+        self.pagina = 0
+        self.por_pagina = 5
+        self.mensagem = None
+
+    def filtrar(self):
+        if self.filtro == "ativos":
+            return [p for p in self.punicoes if p[3] == 1]
+        elif self.filtro == "removidos":
+            return [p for p in self.punicoes if p[3] == 0]
+        return self.punicoes
+
+    def gerar_embed(self):
+        punicoes_filtradas = self.filtrar()
+        total_paginas = max(1, (len(punicoes_filtradas) + self.por_pagina - 1) // self.por_pagina)
+        inicio = self.pagina * self.por_pagina
+        fim = inicio + self.por_pagina
+        pag_punicoes = punicoes_filtradas[inicio:fim]
+
+        embed = discord.Embed(
+            title="⚠️ Histórico de Strikes",
+            color=discord.Color.gold(),
+            timestamp=datetime.now(FUSO_HORARIO)
+        )
+        if self.usuario.avatar:
+            embed.set_thumbnail(url=self.usuario.avatar.url)
+        embed.set_author(name=f"Consulta por {self.ctx.author}", icon_url=self.ctx.author.avatar.url if self.ctx.author.avatar else None)
+        embed.add_field(name="Usuário", value=f"{self.usuario.mention} (`{self.usuario.id}`)", inline=False)
+
+        ativos = sum(1 for p in self.punicoes if p[3] == 1)
+        embed.add_field(name="Strikes Ativos", value=f"**{ativos}/4**", inline=False)
+
+        if not pag_punicoes:
+            embed.add_field(name="Detalhes", value="Nenhuma punição nesta página.", inline=False)
+        else:
+            detalhes = ""
+            for idx, (tipo, motivo, timestamp, ativo) in enumerate(pag_punicoes, start=inicio + 1):
+                data = datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S').strftime('%d/%m/%Y %H:%M')
+                status = "✅ Ativo" if ativo == 1 else "❌ Removido"
+                detalhes += f"**{idx}.** `{tipo}` - *{motivo}* (`{data}`) • {status}\n"
+            embed.add_field(name="Detalhes", value=detalhes, inline=False)
+
+        embed.set_footer(text=f"Página {self.pagina + 1}/{total_paginas} • Filtro: {self.filtro.capitalize()}")
+        return embed
+
+    async def update_message(self, interaction: Interaction):
+        if interaction.user != self.ctx.author:
+            await interaction.response.send_message("Você não pode interagir com este menu.", ephemeral=True)
+            return
+        await interaction.response.edit_message(embed=self.gerar_embed(), view=self)
+
+    @discord.ui.button(label="⬅️", style=discord.ButtonStyle.secondary)
+    async def anterior(self, interaction: Interaction, button: Button):
+        if self.pagina > 0:
+            self.pagina -= 1
+            await self.update_message(interaction)
+
+    @discord.ui.button(label="➡️", style=discord.ButtonStyle.secondary)
+    async def proximo(self, interaction: Interaction, button: Button):
+        if (self.pagina + 1) * self.por_pagina < len(self.filtrar()):
+            self.pagina += 1
+            await self.update_message(interaction)
+
+    @discord.ui.button(label="Ativos", style=discord.ButtonStyle.success)
+    async def mostrar_ativos(self, interaction: Interaction, button: Button):
+        self.filtro = "ativos"
+        self.pagina = 0
+        await self.update_message(interaction)
+
+    @discord.ui.button(label="Removidos", style=discord.ButtonStyle.danger)
+    async def mostrar_removidos(self, interaction: Interaction, button: Button):
+        self.filtro = "removidos"
+        self.pagina = 0
+        await self.update_message(interaction)
+
+    @discord.ui.button(label="Todos", style=discord.ButtonStyle.primary)
+    async def mostrar_todos(self, interaction: Interaction, button: Button):
+        self.filtro = "todos"
+        self.pagina = 0
+        await self.update_message(interaction)
+
+# Comando para exibir os strikes com botões
+@bot.command(name="strikes")
 @commands.has_permissions(administrator=True)
 async def strikes(ctx, usuario: discord.Member):
-    cursor.execute("SELECT COUNT(*) FROM punicoes WHERE usuario_id = ? AND ativo = 1", (usuario.id,))
-    total_strikes = cursor.fetchone()[0]
-    embed = discord.Embed(title="⚠️ Histórico de Strikes", color=0xFFD700)
-    embed.add_field(name="Usuário", value=usuario.mention, inline=False)
-    embed.add_field(name="Total de Strikes", value=f"{total_strikes}/4", inline=False)
-    embed.timestamp = datetime.now(FUSO_HORARIO)
-    await send_log(embed)
-    await ctx.send(embed=embed)
+    cursor.execute(
+        "SELECT tipo, motivo, timestamp, ativo FROM punicoes WHERE usuario_id = ? ORDER BY timestamp DESC",
+        (usuario.id,)
+    )
+    punicoes = cursor.fetchall()
+
+    if not punicoes:
+        await ctx.send(f"✅ {usuario.mention} não possui punições registradas.")
+        return
+
+    view = StrikePaginator(ctx, usuario, punicoes)
+    embed = view.gerar_embed()
+    view.mensagem = await ctx.send(embed=embed, view=view)
 
 # Comando para exibir histórico de punições
-@bot.command()
+class HistoricoPaginator(View):
+    def __init__(self, ctx, usuario, punicoes):
+        super().__init__(timeout=60)
+        self.ctx = ctx
+        self.usuario = usuario
+        self.punicoes = punicoes
+        self.pagina = 0
+        self.por_pagina = 5
+        self.mensagem = None
+
+    def gerar_embed(self):
+        total_paginas = max(1, (len(self.punicoes) + self.por_pagina - 1) // self.por_pagina)
+        inicio = self.pagina * self.por_pagina
+        fim = inicio + self.por_pagina
+        punicoes_pagina = self.punicoes[inicio:fim]
+
+        embed = discord.Embed(
+            title="📜 Histórico de Punições",
+            color=discord.Color.blue(),
+            timestamp=datetime.now(FUSO_HORARIO)
+        )
+        embed.set_author(name=f"Consulta por {self.ctx.author}", icon_url=self.ctx.author.avatar.url if self.ctx.author.avatar else None)
+        if self.usuario.avatar:
+            embed.set_thumbnail(url=self.usuario.avatar.url)
+
+        embed.add_field(name="Usuário", value=f"{self.usuario.mention} (`{self.usuario.id}`)", inline=False)
+
+        if not punicoes_pagina:
+            embed.add_field(name="Detalhes", value="Nenhuma punição nesta página.", inline=False)
+        else:
+            for idx, (tipo, motivo, duracao, timestamp) in enumerate(punicoes_pagina, start=inicio + 1):
+                data = datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S").strftime("%d/%m/%Y %H:%M")
+                duracao_formatada = duracao if duracao else "Indefinida"
+                embed.add_field(
+                    name=f"{idx}. {tipo} • {data}",
+                    value=f"**Motivo:** {motivo}\n**Duração:** {duracao_formatada}",
+                    inline=False
+                )
+
+        embed.set_footer(text=f"Página {self.pagina + 1}/{total_paginas}")
+        return embed
+
+    async def update_message(self, interaction: discord.Interaction):
+        if interaction.user != self.ctx.author:
+            await interaction.response.send_message("Você não pode interagir com este menu.", ephemeral=True)
+            return
+        await interaction.response.edit_message(embed=self.gerar_embed(), view=self)
+
+    @discord.ui.button(label="⬅️", style=discord.ButtonStyle.secondary)
+    async def anterior(self, interaction: discord.Interaction, button: Button):
+        if self.pagina > 0:
+            self.pagina -= 1
+            await self.update_message(interaction)
+
+    @discord.ui.button(label="➡️", style=discord.ButtonStyle.secondary)
+    async def proximo(self, interaction: discord.Interaction, button: Button):
+        if (self.pagina + 1) * self.por_pagina < len(self.punicoes):
+            self.pagina += 1
+            await self.update_message(interaction)
+
+#comando historico
+@bot.command(name="historico")
 @commands.has_permissions(administrator=True)
 async def historico(ctx, usuario: discord.Member):
-    cursor.execute("SELECT tipo, motivo, duracao, timestamp FROM punicoes WHERE usuario_id = ?", (usuario.id,))
+    cursor.execute(
+        "SELECT tipo, motivo, duracao, timestamp FROM punicoes WHERE usuario_id = ? ORDER BY timestamp DESC",
+        (usuario.id,)
+    )
     punicoes = cursor.fetchall()
-    embed = discord.Embed(title="📜 Histórico de Punições", color=0x00BFFF)
-    embed.add_field(name="Usuário", value=usuario.mention, inline=False)
-    for punicao in punicoes:
-        embed.add_field(name=f"{punicao[0]} - {punicao[3]}", value=f"Motivo: {punicao[1]} | Duração: {punicao[2]}", inline=False)
-    embed.timestamp = datetime.now(FUSO_HORARIO)
+
+    if not punicoes:
+        await ctx.send(f"✅ {usuario.mention} não possui histórico de punições.")
+        return
+
+    view = HistoricoPaginator(ctx, usuario, punicoes)
+    embed = view.gerar_embed()
+    view.mensagem = await ctx.send(embed=embed, view=view)
+
     await send_log(embed)
-    await ctx.send(embed=embed)
 
 # Comando para Exibir Comandos
 @bot.command()
@@ -539,7 +814,7 @@ async def comandos(ctx):
     embed.add_field(name="📊 Comandos de Monitoramento", value=
         "`hy!strikes @usuário` - Mostra a quantidade de strikes.\n"
         "`hy!historico @usuário` - Exibe o histórico de punições.\n"
-        "`hy!remover_strike @usuário` - Remove um strike ativo.\n",
+        "`hy!remover_strike @usuário [quantidade]` - Remove um strike ativo.\n",
         inline=False)
         
     embed.add_field(name="🎫 Comando de tickets", value=
