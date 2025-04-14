@@ -28,9 +28,7 @@ bot = commands.Bot(command_prefix=PREFIX, intents=intents)
 # Definir fuso horário para Brasília
 
 FUSO_HORARIO = pytz.timezone("America/Sao_Paulo")
-data_sem_tz = datetime.strptime(timestamp, "%d-%m-%Y %H:%M:%S")
-data_utc = data_sem_tz.replace(tzinfo=pytz.utc)
-timestamp_brt = data_utc.astimezone(FUSO_HORARIO)
+timestamp_brt = datetime.now(FUSO_HORARIO)
 
 # Emojis
 e_certo = "<:certo:1357559377921441975>"
