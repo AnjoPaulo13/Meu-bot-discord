@@ -659,12 +659,11 @@ class StrikePaginator(View):
         else:
             detalhes = ""
             for idx, (tipo, motivo, timestamp, ativo) in enumerate(pag_punicoes, start=inicio + 1):
-                data_utc = datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S').replace(tzinfo=pytz.utc)
-                data_brt = data_utc.astimezone(FUSO_HORARIO)
-                data_formatada = data_brt.strftime('%d/%m/%Y %H:%M')
+                data_br = timestamp.astimezone(FUSO_HORARIO)
+                data = data_br.strftime('%d/%m/%Y %H:%M')
                 
                 status = "✅ Ativo" if ativo == 1 else "❌ Removido"
-                detalhes += f"**{idx}.** `{tipo}` - *{motivo}* (`{data_brt}`) • {status}\n"
+                detalhes += f"**{idx}.** `{tipo}` - *{motivo}* (`{data}`) • {status}\n"
             embed.add_field(name="Detalhes", value=detalhes, inline=False)
 
         embed.set_footer(text=f"Página {self.pagina + 1}/{total_paginas} • Filtro: {self.filtro.capitalize()}")
