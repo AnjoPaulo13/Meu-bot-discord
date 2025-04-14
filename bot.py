@@ -754,7 +754,8 @@ class HistoricoPaginator(View):
             embed.add_field(name="Detalhes", value="Nenhuma punição nesta página.", inline=False)
         else:
             for idx, (tipo, motivo, duracao, timestamp) in enumerate(punicoes_pagina, start=inicio + 1):
-                data = datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S").strftime("%d/%m/%Y %H:%M")
+                data_br = timestamp_brt.astimezone(FUSO_HORARIO)
+                data = data_br.strftime('%d/%m/%Y %H:%M')
                 duracao_formatada = duracao if duracao else "Indefinida"
                 embed.add_field(
                     name=f"{idx}. {tipo} • {data}",
