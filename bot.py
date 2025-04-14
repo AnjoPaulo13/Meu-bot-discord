@@ -27,6 +27,8 @@ bot = commands.Bot(command_prefix=PREFIX, intents=intents)
 
 # Definir fuso horário para Brasília
 FUSO_HORARIO = pytz.timezone("America/Sao_Paulo")
+timestamp_brt = timestamp.astimezone(FUSO_HORARIO)
+
 
 # Emojis
 e_certo = "<:certo:1357559377921441975>"
@@ -377,7 +379,7 @@ async def kick(ctx, usuario: discord.Member, *, motivo: str):
     try:
         await usuario.kick(reason=motivo)
         embed = discord.Embed(title="👢 **Usuário Expulso**", description=f"O usuário foi removido do servidor.", color=0xFFA500)
-        embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
+        embed.set_author(name=ctx.author.name, icon_url=ctx.author.display_avatar.url)
         embed.set_thumbnail(url=usuario.avatar_url)
         embed.add_field(name="Usuário", value=usuario.mention, inline=False)
         embed.add_field(name="Motivo", value=motivo, inline=False)
@@ -568,7 +570,7 @@ async def remover_strike(ctx, usuario: discord.Member, quantidade: int = 1):
     # Montar lista de strikes encontrados
     descricao_strikes = ""
     for i, (strike_id, tipo, motivo, timestamp) in enumerate(strikes, start=1):
-        descricao_strikes += f"**{i}.** `{tipo}` - {motivo} *(Aplicado em: {timestamp})*\n"
+        descricao_strikes += f"**{i}.** `{tipo}` - {motivo} *(Aplicado em: {timestamp_brt.strftime('%d/%m/%Y %H:%M')})*\n"
 
     confirm_embed = discord.Embed(
         title="⚠️ Confirmar Remoção de Strike(s)",
@@ -656,7 +658,10 @@ class StrikePaginator(View):
         else:
             detalhes = ""
             for idx, (tipo, motivo, timestamp, ativo) in enumerate(pag_punicoes, start=inicio + 1):
-                data = datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S').strftime('%d/%m/%Y %H:%M')
+                data_utc = datetime.strptime(timestamp, '%Y-%m-%d %H:%M:%S').replace(tzinfo=pytz.utc)
+                data_brt = data_utc.astimezone(fuso_brasilia)
+                data_formatada = data_brt.strftime('%d/%m/%Y %H:%M')
+                
                 status = "✅ Ativo" if ativo == 1 else "❌ Removido"
                 detalhes += f"**{idx}.** `{tipo}` - *{motivo}* (`{data}`) • {status}\n"
             embed.add_field(name="Detalhes", value=detalhes, inline=False)
