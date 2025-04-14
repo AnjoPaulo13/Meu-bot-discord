@@ -408,7 +408,7 @@ async def punir(ctx, usuario: discord.Member, tempo: str, *, motivo: str):
     db.commit()
 
     embed = discord.Embed(title="🔴 **PUNIÇÃO APLICADA**", description="A punição foi aplicada com sucesso.", color=0xFF0000)
-    embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
+    embed.set_author(name=ctx.author.name, icon_url=ctx.author.avatar.url if ctx.author.avatar else None)
     embed.set_thumbnail(url=usuario.avatar_url)
     embed.add_field(name="Usuário", value=usuario.mention, inline=False)
     embed.add_field(name="Punido por", value=ctx.author.mention, inline=False)
